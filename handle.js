@@ -3,7 +3,7 @@ const Markup = require('telegraf/markup');
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
-let messageId;
+let messageInfo;
 
 const replyStartMarkup = Markup.keyboard ([
     Markup.button.callback('Viomitra.Китай', 'china'),
@@ -32,6 +32,7 @@ bot.start((ctx) => {
 
 bot.hears('Viomitra.Китай', (ctx) => {
     ctx.replyWithMarkdown(`Вы, выбрали Viomitra.Китай. С чем связан Ваш вопрос?`, replyAskChinaMarkup);
+    messageInfo = ctx.message.text;
 });
 
 bot.hears('Viomitra.Банкротство', (ctx) => {
@@ -40,22 +41,22 @@ bot.hears('Viomitra.Банкротство', (ctx) => {
 
 bot.hears('Регистрация Viomitra.Китай', (ctx) => {
     ctx.replyWithMarkdown('Изучите этот раздел FAQ - https://china.viomitra.ru/registration \nВам помог наш бот?', replyAskHelpMarkup);
-    messageId = ctx.message.message_id;
+    messageInfo = ctx.message.text;
 });
 
 bot.hears('Регистрация Viomitra.Банкротство', (ctx) => {
     ctx.replyWithMarkdown('Скачайте этот документ с инструкцией - https://bankrot.viomitra.ru/Document/GuideDocument?guideName=RegistrationGuideDoc \nВам помог наш бот?', replyAskHelpMarkup);
-    messageId = ctx.message.message_id;
+    messageInfo = ctx.message.text;
 });
 
 bot.hears('Восстановление доступа Viomotra.Китай', (ctx) => {
     ctx.replyWithMarkdown('Изучите этот раздел FAQ - https://china.viomitra.ru/restore \nВам помог наш бот?', replyAskHelpMarkup);
-    messageId = ctx.message.message_id;
+    messageInfo = ctx.message.text;
 });
 
 bot.hears('Восстановление доступа Viomitra.Банкротство', (ctx) => {
     ctx.replyWithMarkdown('Если вы забыли пароль, вы можете воспользоваться формой "Забыли пароль?" http://bankrot.viomitra.ru/Account/ForgotPassword \nВам помог наш бот?', replyAskHelpMarkup);
-    messageId = ctx.message.message_id;
+    messageInfo = ctx.message.text;
 });
 
 bot.hears('Помог', (ctx) => {
@@ -64,11 +65,11 @@ bot.hears('Помог', (ctx) => {
 
 bot.hears('Не помог', (ctx) => {
     let user = ctx.message.from;
-    let message = `Пользователю @${user.username} (${user.id}) требуется помощь.`;
+    let message = `Пользователю @${user.username} (${user.id}) требуется помощь. Проблема, которую выбрал пользователь: ${messageInfo}`;
     let chatId = 797596124;
 
     bot.telegram.sendMessage(chatId, message);
-    
+
     ctx.reply('С вами свяжется оператор')
 });
 
