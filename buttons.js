@@ -1,6 +1,7 @@
 const { faq } = require('./faq.js');
 const { Telegraf } = require('telegraf');
 const Markup = require('telegraf/markup');
+const { state } = require('./variables.js');
 
 const createCategoryButtons =(categories) => {
     const categoryNames = Object.keys(categories);
@@ -14,32 +15,41 @@ const createSubcategoryButtons =(subcategories) => {
     return Markup.keyboard(buttons);
 }
 
-module.exports.buttons = {
-    replyCategoriesChinaMarkup: createCategoryButtons(faq.sites.china.categories),
-    replyCategoriesBankrotMarkup: createCategoryButtons(faq.sites.bankrot.categories),
-    replyCategoriesRealtyMarkup: createCategoryButtons(faq.sites.realty.categories),
-    replySubcategoriesUserIdentificationChina: createSubcategoryButtons(faq.sites.china.categories.userIdentification.subcategories),
-    /* replySubcategoriesPaymentChina: createSubcategoryButtons(faq.sites.china.categories.payment.subcategories), */
-    replySubcategoriesUserIdentificationBankrot: createSubcategoryButtons(faq.sites.bankrot.categories.userIdentification.subcategories),
-    replySubcategoriesUserIdentificationRealty: createSubcategoryButtons(faq.sites.realty.categories.userIdentification.subcategories)
+const createParticipationButtons =(participation) => {
+    const participationName = Object.keys(participation);
+    const buttons = participationName.map(part => Markup.button.callback(participation[part].name, participation[part].id));
+    return Markup.keyboard(buttons);
 }
 
+const createAnswerButtons = (answers) => {
+    const answerName = Object.keys(answers);
+    const buttons = answerName.map(answer => Markup.button.callback(answers[answer].name, answers[answer].id));
+    return Markup.keyboard(buttons);
+}
 
-/* const categoriesChina = faq.sites.china.categories;
-const categoryNamesChina = Object.keys(categoriesChina);
-const buttonsChina = categoryNamesChina.map(category => Markup.button.callback(categoriesChina[category].name, categoriesChina[category].id));
-const replyCategoriesChinaMarkup = Markup.keyboard(buttonsChina);
+const getFeedbackMarkup = Markup.keyboard ([
+    Markup.button.callback('Бот помог'),
+    Markup.button.callback('Связаться с оператором'),
+    Markup.button.callback('Задать другой вопрос')
+]);
 
-const categoriesBankrot = faq.sites.bankrot.categories;
-const categoryNamesBankrot = Object.keys(categoriesBankrot);
-const buttonsBankrot = categoryNamesBankrot.map(category => Markup.button.callback(categoriesBankrot[category].name, categoriesBankrot[category].id));
-const replyCategoriesBankrotMarkup = Markup.keyboard(buttonsBankrot);
+module.exports.buttons = {
+    replyCategoriesBankrotMarkup: createCategoryButtons(state.categoriesBankrot),
 
-const categoriesRealty = faq.sites.realty.categories;
-const categoryNamesRealty = Object.keys(categoriesRealty);
-const buttonsRealty = categoryNamesRealty.map(category => Markup.button.callback(categoriesRealty[category].name, categoriesRealty[category].id));
-const replyCategoriesRealtyMarkup = Markup.keyboard(buttonsRealty); */
+    replyParticipationBankrotMarkup: createParticipationButtons(faq.sites.bankrot.participation),
 
-/* const subcategoriesUserIdentificationChina = faq.sites.china.categories.userIdentification.subcategories;
-const subcategoriesUserIdentificationNamesRealty = Object.keys(subcategoriesUserIdentificationChina); */
+    replySubcategoriesDepositBankrotMarkup: createSubcategoryButtons(state.subcategoriesDepositBankrot),
+    replySubcategoriesSignatureBankrotMarkup: createSubcategoryButtons(state.subcategoriesSignatureBankrot),
+    replySubcategoriesApplicationForParticipationBankrotMarkup: createSubcategoryButtons(state.subcategoriesApplicationForParticipationBankrot),
+    replySubcategoriesRegistrationBankrotMarkup: createSubcategoryButtons(state.subcategoriesRegistrationBankrot),
+    replySubcategoriesTechnicalQuestionBankrotMarkup: createSubcategoryButtons(state.subcategoriesTechnicalQuestionBankrot),
+
+    replyAnswersRefundDepositBankrotMarkup: createAnswerButtons(state.subcategoriesDepositBankrot.refundDeposit.answers),
+    replyAnswersRequiredDigitalSignatureTypeBankrotMarkup: createAnswerButtons(state.subcategoriesSignatureBankrot.requiredDigitalSignatureType.answers),
+
+    replyPlatformRegistrationBankrotMarkup: createAnswerButtons(state.subcategoriesRegistrationBankrot.platformRegistration.answers),
+    replyRegistrationRejectionReceidedBankrotMarkup: createAnswerButtons(state.subcategoriesRegistrationBankrot.registrationRejectionReceided.answers),
+    
+    replyFeedbackMarkup: getFeedbackMarkup
+}
 
