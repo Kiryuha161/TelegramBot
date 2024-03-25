@@ -28,12 +28,17 @@ bot.hears(faq.sites.bankrot.participation.parirticipant.name, (ctx) => {
 
 bot.hears(faq.sites.bankrot.participation.organizer.name, (ctx) => {
     let user = ctx.message.from;
-    let message = `У пользователя-организатора ${user.username} вопрос по Viomitra.Банкротство`
+    let message = `У пользователя-организатора ${user.last_name} ${user.first_name} - @${user.username} вопрос по Viomitra.Банкротство`
     let chatId = 797596124;
 
-    bot.telegram.sendMessage(chatId, message);
-    
-    ctx.reply(faq.sites.bankrot.participation.organizer.value + '. С Вами свяжется оператор');
+    bot.telegram.sendMessage(chatId, message).then(() => {
+        // После отправки сообщения можно обновить сообщение пользователя
+        ctx.reply('С вами свяжется оператор', Markup.removeKeyboard());
+    })
+    .catch((error) => {
+        console.error('Error sending message:', error);
+        ctx.reply('Произошла ошибка при отправке сообщения');
+    });;
 })
 
 bot.hears(state.categoriesBankrot.deposit.name, (ctx) => {
@@ -342,15 +347,20 @@ bot.hears('Связаться с оператором', (ctx) => {
     let user = ctx.message.from;
     let message;
     if (messageInfo) {
-        message = `Пользователю @${user.username} (${user.id}) требуется помощь. Проблема, которую выбрал пользователь: ${messageInfo}`;
+        message = `Пользователю ${user.last_name} ${user.last_name} - @${user.username} (${user.id}) требуется помощь. Проблема, которую выбрал пользователь: ${messageInfo}`;
       } else {
-        message = `Пользователю нужна помощь @${ctx.message.from.username} (${user.id})`;
+        message = `Пользователю ${user.last_name} ${user.last_name} нужна помощь @${ctx.message.from.username} (${user.id})`;
       }
     let chatId = 797596124;
 
-    bot.telegram.sendMessage(chatId, message);
-
-    ctx.reply('С вами свяжется оператор')
+    bot.telegram.sendMessage(chatId, message).then(() => {
+        // После отправки сообщения можно обновить сообщение пользователя
+        ctx.reply('С вами свяжется оператор', Markup.removeKeyboard());
+    })
+    .catch((error) => {
+        console.error('Error sending message:', error);
+        ctx.reply('Произошла ошибка при отправке сообщения');
+    });;
 });
 
 bot.launch().then(() => console.log('Started'));
