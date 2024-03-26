@@ -13,7 +13,7 @@ const replyStartMarkup = Markup.keyboard(
 )
 
 bot.start((ctx) => {
-    ctx.replyWithMarkdown(`Привет, ${ctx.message.from.username}! С какой площадкой вам нужна помощь?`, replyStartMarkup);
+    ctx.replyWithMarkdown(`Привет, ${ctx.message.from.username}! С какой площадкой вам нужна помощь?`, replyStartMarkup.resize());
 })
 
 bot.hears(faq.sites.bankrot.name, (ctx) => {
@@ -354,8 +354,7 @@ bot.hears('Связаться с оператором', (ctx) => {
     let chatId = 797596124;
 
     bot.telegram.sendMessage(chatId, message).then(() => {
-        // После отправки сообщения можно обновить сообщение пользователя
-        ctx.reply('С вами свяжется оператор', Markup.removeKeyboard());
+        ctx.reply('С вами в ближайшее время свяжется оператор. Ожидайте ответа!', Markup.removeKeyboard());
     })
     .catch((error) => {
         console.error('Error sending message:', error);
