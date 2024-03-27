@@ -9,14 +9,95 @@ const bot = new Telegraf('6366545078:AAFZjWTJXL4RQ3rG6yvesEj-X0CciRb1JoU');
 let messageInfo = "";
 
 const replyStartMarkup = Markup.keyboard(
-    Object.keys(faq.sites).map(site => Markup.button.callback(faq.sites[site].name, site))
+    Object.keys(faq).map(site => Markup.button.callback(faq[site].name, site))
 )
+
+let processNode =(node, path = []) => {
+    const { name, value, details, categories, subcategories, answers } = node;
+
+    const buttons = [];
+
+    // Кнопки для текущего уровня
+    buttons.push({ text: name, data: { type: 'node', path: [...path, name] } });
+
+    if (value && name) {
+        console.log(value);
+        bot.hears(name, (ctx) => {
+            ctx.reply(value);
+        })
+    }
+
+    // Создаем дополнительные кнопки в зависимости от типа узла
+    if (details) {
+        buttons.push({ text: 'Выбрать детали', data: { type: 'details', path: [...path, 'details'] } });
+    }
+    if (categories) {
+        buttons.push({ text: 'Выбрать категорию', data: { type: 'categories', path: [...path, 'categories'] } });
+    }
+    if (subcategories) {
+        buttons.push({ text: 'Выбрать подкатегорию', data: { type: 'subcategories', path: [...path, 'subcategories'] } });
+    }
+    if (answers) {
+        buttons.push({ text: 'Выбрать вопрос', data: { type: 'questions', path: [...path, 'questions'] } });
+    }
+
+    console.log(`Доступные действия для ${name}:`);
+    buttons.forEach((button, index) => console.log(`${index + 1}. ${button.text}`));
+
+    if (details) processNode(details, [...path, 'details']);
+    if (categories) processNode(categories, [...path, 'categories']);
+    if (subcategories) processNode(subcategories, [...path, 'subcategories']);
+    if (answers) processNode(answers, [...path, 'questions']);
+}
+
+processNode(faq);
 
 bot.start((ctx) => {
     ctx.replyWithMarkdown(`Привет, ${ctx.message.from.username}! С какой площадкой вам нужна помощь?`, replyStartMarkup.resize());
 })
 
-bot.hears(faq.sites.bankrot.name, (ctx) => {
+bot.hears("Задать другой вопрос", (ctx) => {
+    ctx.replyWithMarkdown(`С какой площадкой Вам нужна помошь, ${ctx.message.from.username}`, replyStartMarkup);
+})
+
+bot.hears('Бот помог', (ctx) => {
+    ctx.reply('Рады помочь!');
+});
+
+bot.hears('Связаться с оператором', (ctx) => {
+    let user = ctx.message.from;
+    let message;
+    if (messageInfo) {
+        message = `Пользователю ${user.last_name} ${user.last_name} - @${user.username} (${user.id}) требуется помощь. Проблема, которую выбрал пользователь: ${messageInfo}`;
+    } else {
+        message = `Пользователю ${user.last_name} ${user.last_name} нужна помощь @${ctx.message.from.username} (${user.id})`;
+    }
+    let chatId = 797596124;
+
+    bot.telegram.sendMessage(chatId, message).then(() => {
+        ctx.reply('С вами в ближайшее время свяжется оператор. Ожидайте ответа!', Markup.removeKeyboard());
+    })
+        .catch((error) => {
+            console.error('Error sending message:', error);
+            ctx.reply('Произошла ошибка при отправке сообщения');
+        });;
+});
+
+bot.launch().then(() => console.log('Started'));
+
+process.once('SIGINT', () => bot.stop('SIGINT'));
+process.once('SIGTERM', () => bot.stop('SIGTERM'));
+
+/*module.exports.handler = async function (event, context) {
+    const message = JSON.parse(event.body);
+    await bot.handleUpdate(message);
+    return {
+        statusCode: 200,
+        body: '',
+    };
+};*/
+
+/* bot.hears(faq.sites.bankrot.name, (ctx) => {
     ctx.replyWithMarkdown(faq.sites.bankrot.value, buttons.replyParticipationBankrotMarkup);
     messageInfo = ctx.message.text;
 })
@@ -333,45 +414,4 @@ bot.hears(state.subcategoriesTradeBankrot.findingTradesOnElectronicPlatform.name
 bot.hears(state.subcategoriesTradeBankrot.howAndWhenToSubmitParticipationApplication.name, (ctx) => {
     ctx.replyWithMarkdown(state.subcategoriesTradeBankrothowAndWhenToSubmitParticipationApplication.value, buttons.replyFeedbackMarkup);
     messageInfo = ctx.message.text;
-})
-
-bot.hears("Задать другой вопрос", (ctx) => {
-    ctx.replyWithMarkdown(`С какой площадкой Вам нужна помошь, ${ctx.message.from.username}`, replyStartMarkup);
-})
-
-bot.hears('Бот помог', (ctx) => {
-    ctx.reply('Рады помочь!');
-});
-
-bot.hears('Связаться с оператором', (ctx) => {
-    let user = ctx.message.from;
-    let message;
-    if (messageInfo) {
-        message = `Пользователю ${user.last_name} ${user.last_name} - @${user.username} (${user.id}) требуется помощь. Проблема, которую выбрал пользователь: ${messageInfo}`;
-      } else {
-        message = `Пользователю ${user.last_name} ${user.last_name} нужна помощь @${ctx.message.from.username} (${user.id})`;
-      }
-    let chatId = 797596124;
-
-    bot.telegram.sendMessage(chatId, message).then(() => {
-        ctx.reply('С вами в ближайшее время свяжется оператор. Ожидайте ответа!', Markup.removeKeyboard());
-    })
-    .catch((error) => {
-        console.error('Error sending message:', error);
-        ctx.reply('Произошла ошибка при отправке сообщения');
-    });;
-});
-
-bot.launch().then(() => console.log('Started'));
-
-process.once('SIGINT', () => bot.stop('SIGINT'));
-process.once('SIGTERM', () => bot.stop('SIGTERM'));
-
-/*module.exports.handler = async function (event, context) {
-    const message = JSON.parse(event.body);
-    await bot.handleUpdate(message);
-    return {
-        statusCode: 200,
-        body: '',
-    };
-};*/
+}) */
