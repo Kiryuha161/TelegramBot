@@ -1,63 +1,79 @@
 const { Telegraf } = require('telegraf');
 const Markup = require('telegraf/markup');
-const { faq } = require('./faq');
-const { state } = require('./variables.js');
-const { buttons } = require("./buttons.js");
+const fs = require('fs');
+const Exceljs = require('exceljs');
+const { buttons } = require('./buttons.js')
+
+const categoryData = {};
+let startButtons = [];
+let categoryRealtyButtons = [];
+let subcategoryRealtyButtons = [];
+
+async function handleData() {
+    const workbook = new Exceljs.Workbook();
+    await workbook.xlsx.readFile('./excelQuestions.xlsx');
+    const worksheet = workbook.getWorksheet('Пример вопросов');
+
+    for (let i = 1; i <= worksheet.lastRow.number; i++) {
+        const category = worksheet.getCell(`A${i}`).value;
+        const subcategory = worksheet.getCell(`B${i}`).value;
+        const question = worksheet.getCell(`C${i}`).value;
+        const answer = worksheet.getCell(`D${i}`).value;
+
+        if (categoryData[category]) {
+            if (categoryData[category][subcategory]) {
+                categoryData[category][subcategory].push({ question, answer });
+            } else {
+                categoryData[category][subcategory] = [{ question, answer }];
+            }
+        } else {
+            categoryData[category] = { [subcategory]: [{ question, answer }] };
+        }
+    }
+
+    console.log(categoryData);
+
+    const uniqueRealtyCategories = new Set();
+
+    for (let i = 1; i <= worksheet.lastRow.number; i++) {
+        const category = worksheet.getCell(`A${i}`).value;
+        uniqueRealtyCategories.add(category);
+    }
+
+    const categoriesRealtyArray = Array.from(uniqueRealtyCategories);
+
+    categoryRealtyButtons = Markup.keyboard([
+        categoriesRealtyArray.map((category) => ({
+            text: category,
+            callback_data: category,
+        })),
+    ]); 
+}
+
+handleData(); // Вызов функции для обработки данных
 
 const bot = new Telegraf('6366545078:AAFZjWTJXL4RQ3rG6yvesEj-X0CciRb1JoU');
 
 let messageInfo = "";
 
-const replyStartMarkup = Markup.keyboard(
-    Object.keys(faq).map(site => Markup.button.callback(faq[site].name, site))
-)
-
-let processNode =(node, path = []) => {
-    const { name, value, details, categories, subcategories, answers } = node;
-
-    const buttons = [];
-
-    // Кнопки для текущего уровня
-    buttons.push({ text: name, data: { type: 'node', path: [...path, name] } });
-
-    if (value && name) {
-        console.log(value);
-        bot.hears(name, (ctx) => {
-            ctx.reply(value);
-        })
-    }
-
-    // Создаем дополнительные кнопки в зависимости от типа узла
-    if (details) {
-        buttons.push({ text: 'Выбрать детали', data: { type: 'details', path: [...path, 'details'] } });
-    }
-    if (categories) {
-        buttons.push({ text: 'Выбрать категорию', data: { type: 'categories', path: [...path, 'categories'] } });
-    }
-    if (subcategories) {
-        buttons.push({ text: 'Выбрать подкатегорию', data: { type: 'subcategories', path: [...path, 'subcategories'] } });
-    }
-    if (answers) {
-        buttons.push({ text: 'Выбрать вопрос', data: { type: 'questions', path: [...path, 'questions'] } });
-    }
-
-    console.log(`Доступные действия для ${name}:`);
-    buttons.forEach((button, index) => console.log(`${index + 1}. ${button.text}`));
-
-    if (details) processNode(details, [...path, 'details']);
-    if (categories) processNode(categories, [...path, 'categories']);
-    if (subcategories) processNode(subcategories, [...path, 'subcategories']);
-    if (answers) processNode(answers, [...path, 'questions']);
-}
-
-processNode(faq);
-
 bot.start((ctx) => {
-    ctx.replyWithMarkdown(`Привет, ${ctx.message.from.username}! С какой площадкой вам нужна помощь?`, replyStartMarkup.resize());
+    ctx.replyWithMarkdown(`Привет, ${ctx.message.from.username}! С какой площадкой вам нужна помощь?`, startButtons);
 })
 
+bot.hears("Покупка Viomitra.Коммерческие торги", (ctx) => {
+    ctx.replyWithMarkdown('Какая подкатегория вас интересует?', categoryButtons);
+}) 
+
+bot.hears(/Покупка Viomitra.Банкротство/, (ctx) => {
+    ctx.reply(ctx, 'Вы выбрали категорию - Покупка. Выберите подкатегорию.');
+})
+
+bot.hears(/Регистрация Viomitra.Банкротство/, (ctx) => {
+    ctx.reply(ctx, 'Вы выбрали категорию - Регистрация. Выберите подкатегорию.');
+});
+
 bot.hears("Задать другой вопрос", (ctx) => {
-    ctx.replyWithMarkdown(`С какой площадкой Вам нужна помошь, ${ctx.message.from.username}`, replyStartMarkup);
+    ctx.replyWithMarkdown(`С какой площадкой Вам нужна помошь, ${ctx.message.from.username}`);
 })
 
 bot.hears('Бот помог', (ctx) => {

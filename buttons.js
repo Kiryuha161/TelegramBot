@@ -1,39 +1,15 @@
-const { faq } = require('./faq.js');
-const { Telegraf } = require('telegraf');
-const Markup = require('telegraf/markup');
-const { state } = require('./variables.js');
+/* const uniqueRealtyCategories = new Set();
 
-const createCategoryButtons =(categories) => {
-    const categoryNames = Object.keys(categories);
-    const buttons = categoryNames.map(category => Markup.button.callback(categories[category].name, categories[category].id));
-    return Markup.keyboard(buttons);
-}
+    for (let i = 1; i <= worksheet.lastRow.number; i++) {
+        const category = worksheet.getCell(`A${i}`).value;
+        uniqueRealtyCategories.add(category);
+    }
 
-const createSubcategoryButtons =(subcategories) => {
-    const subcategoryNames = Object.keys(subcategories);
-    const buttons = subcategoryNames.map(subcategory => Markup.button.callback(subcategories[subcategory].name, subcategories[subcategory].id));
-    return Markup.keyboard(buttons);
-}
+    const categoriesRealtyArray = Array.from(uniqueRealtyCategories);
 
-const createParticipationButtons =(participation) => {
-    const participationName = Object.keys(participation);
-    const buttons = participationName.map(part => Markup.button.callback(participation[part].name, participation[part].id));
-    return Markup.keyboard(buttons);
-}
-
-const createAnswerButtons = (answers) => {
-    const answerName = Object.keys(answers);
-    const buttons = answerName.map(answer => Markup.button.callback(answers[answer].name, answers[answer].id));
-    return Markup.keyboard(buttons);
-}
-
-const getFeedbackMarkup = Markup.keyboard ([
-    Markup.button.callback('Бот помог'),
-    Markup.button.callback('Связаться с оператором'),
-    Markup.button.callback('Задать другой вопрос')
-]);
-
-module.exports.buttons = {
-
-}
-
+    categoryRealtyButtons = Markup.keyboard([
+        categoriesRealtyArray.map((category) => ({
+            text: category,
+            callback_data: category,
+        })),
+    ]); */
