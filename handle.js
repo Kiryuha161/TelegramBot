@@ -1,15 +1,104 @@
 const { Telegraf } = require('telegraf');
 const Markup = require('telegraf/markup');
-const fs = require('fs');
-const Exceljs = require('exceljs');
 const { buttons } = require('./buttons.js')
+let state = require('./variables.js').state;
+let handleData = require('./variables.js').handleData;
 
-const categoryData = {};
-let startButtons = [];
+const bot = new Telegraf('6366545078:AAFZjWTJXL4RQ3rG6yvesEj-X0CciRb1JoU');
+let messageInfo = "";
+
+const runBot = async () => {
+    await handleData();
+    console.log(state.data);
+    let sitesButton = Markup.keyboard(state.sites.map(site => Markup.button.callback(site)));
+    const uniqueCategories = new Set(state.data.map(category => category.category));
+
+    let realtyCategories = Markup.keyboard(
+        [...uniqueCategories]
+          .filter(category => category) // Фильтрация пустых или неопределенных значений
+          .map(category => Markup.button.callback(category))
+      );
+
+      let subcategoriesRegistration = [];
+      const registrationCategory = "Регистрация Viomitra.Коммерческие торги";
+      
+      // Находим категорию "Регистрация" в state.data
+      const registrationData = state.data.find(category => category.category === registrationCategory);
+      
+      if (registrationData && Array.isArray(registrationData.subcategories)) {
+          // Если найдена категория "Регистрация" и подкатегории - массив
+          subcategoriesRegistration = registrationData.subcategories;
+      }
+      
+      let realtySubcategoriesRegistrationButton = Markup.keyboard(
+          subcategoriesRegistration.map(subcategory => Markup.button.callback(subcategory.name))
+      );
+      
+
+    bot.start((ctx) => {
+        ctx.replyWithMarkdown(`Привет, ${ctx.message.from.username}! С какой площадкой вам нужна помощь?`, sitesButton);
+    })
+
+    bot.hears(String(state.sites[1]), (ctx) => {
+        ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Коммерческие торги", realtyCategories);
+    })
+
+    bot.hears(String(state.data[0].category), (ctx) => {
+        ctx.replyWithMarkdown("Вы выбрали регистрацию. Выберите подкатегорию", realtySubcategoriesRegistrationButton);
+    })
+
+    bot.hears("Задать другой вопрос", (ctx) => {
+        ctx.replyWithMarkdown(`С какой площадкой Вам нужна помошь, ${ctx.message.from.username}`);
+    })
+
+    bot.hears('Бот помог', (ctx) => {
+        ctx.reply('Рады помочь!');
+    });
+
+    bot.hears('Связаться с оператором', (ctx) => {
+        let user = ctx.message.from;
+        let message;
+        if (messageInfo) {
+            message = `Пользователю ${user.last_name} ${user.last_name} - @${user.username} (${user.id}) требуется помощь. Проблема, которую выбрал пользователь: ${messageInfo}`;
+        } else {
+            message = `Пользователю ${user.last_name} ${user.last_name} нужна помощь @${ctx.message.from.username} (${user.id})`;
+        }
+        let chatId = 797596124;
+
+        bot.telegram.sendMessage(chatId, message).then(() => {
+            ctx.reply('С вами в ближайшее время свяжется оператор. Ожидайте ответа!', Markup.removeKeyboard());
+        })
+            .catch((error) => {
+                console.error('Error sending message:', error);
+                ctx.reply('Произошла ошибка при отправке сообщения');
+            });;
+    });
+}
+
+runBot()
+    .then(() => console.log('Данные успешно обработаны!'))
+    .catch((error) => console.error('Ошибка обработки данных:', error));;
+
+bot.launch().then(() => console.log('Started'));
+
+process.once('SIGINT', () => bot.stop('SIGINT'));
+process.once('SIGTERM', () => bot.stop('SIGTERM'));
+
+
+
+
+
+
+
+/* let categoryData = []; 
+let startButtons = []; 
 let categoryRealtyButtons = [];
-let subcategoryRealtyButtons = [];
+let subcategoryBuyRealtyButtons = [];
+let getButtons;
 
-async function handleData() {
+ */
+
+/* async function handleData() {
     const workbook = new Exceljs.Workbook();
     await workbook.xlsx.readFile('./excelQuestions.xlsx');
     const worksheet = workbook.getWorksheet('Пример вопросов');
@@ -20,414 +109,80 @@ async function handleData() {
         const question = worksheet.getCell(`C${i}`).value;
         const answer = worksheet.getCell(`D${i}`).value;
 
-        if (categoryData[category]) {
-            if (categoryData[category][subcategory]) {
-                categoryData[category][subcategory].push({ question, answer });
+        const existingCategory = categoryData.find((item) => item.category === category);
+        if (existingCategory) {
+            const existingSubcategory = existingCategory.subcategories.find((sub) => sub.name === subcategory);
+            if (existingSubcategory) {
+                existingSubcategory.questions.push({ question, answer });
             } else {
-                categoryData[category][subcategory] = [{ question, answer }];
+                existingCategory.subcategories.push({ name: subcategory, questions: [{ question, answer }] });
             }
         } else {
-            categoryData[category] = { [subcategory]: [{ question, answer }] };
+            categoryData.push({ category, subcategories: [{ name: subcategory, questions: [{ question, answer }] }] });
         }
     }
 
-    console.log(categoryData);
+    console.log(categoryData[0].category);
+    console.log(categoryData[0].subcategories.find((sub) => sub.name === 'Как зарегистрироваться'));
 
-    const uniqueRealtyCategories = new Set();
+    const uniqueCategories = new Set();
 
     for (let i = 1; i <= worksheet.lastRow.number; i++) {
         const category = worksheet.getCell(`A${i}`).value;
-        uniqueRealtyCategories.add(category);
+        uniqueCategories.add(category);
     }
 
-    const categoriesRealtyArray = Array.from(uniqueRealtyCategories);
+    const categoriesRealtyArray = Array.from(uniqueCategories);
 
-    categoryRealtyButtons = Markup.keyboard([
-        categoriesRealtyArray.map((category) => ({
+    categoryRealtyButtons = Markup.keyboard(
+        categoriesRealtyArray.map((category) => [{
             text: category,
             callback_data: category,
-        })),
-    ]); 
+        }])
+    );
+
+    getButtons = categoryData.map((categoryItem) => {
+        const subcategoryButtons = [];
+        categoryData.forEach((categoryItem) => {
+            const subcategories = categoryItem.subcategories.map((subcategory) => ({
+                text: subcategory.name,
+                callback_data: `subcategory:${subcategory.name}`
+            }));
+            subcategoryButtons.push(...subcategories);
+        });
+
+        const questionButtons = [].concat(
+            ...categoryData.map((categoryItem) =>
+                categoryItem.subcategories.map((sub) =>
+                    sub.questions.map((questionObj) => ({
+                        text: questionObj.question,
+                        callback_data: `question:${questionObj.question}`
+                    }))
+                )
+            )
+        );
+
+        // Создание объекта кнопки для категории
+        const categoryButton = { text: categoryItem, key: 'category' };
+
+        // Создание объектов кнопок для подкатегорий с ключами
+        const subcategoryButtonsWithKeys = subcategoryButtons.map((button, index) => ({ text: button || "", key: `subcategory_${index}` }));
+        console.log(subcategoryButtonsWithKeys);
+
+        // Создание объектов кнопок для вопросов с ключами
+        const questionButtonsWithKeys = questionButtons.map((button, index) => ({ text: button || "", key: `question_${index}` }));
+        console.log(questionButtonsWithKeys);
+        // Создание массива кнопок для передачи в Markup.keyboard
+        const allButtons = [
+            [categoryButton],
+            ...subcategoryButtonsWithKeys,
+            ...questionButtonsWithKeys
+        ];
+
+        // Создание клавиатуры с заданным массивом кнопок
+        const categoryMarkup = Markup.keyboard(allButtons, "").resize();
+
+        return categoryMarkup;
+    });
 }
-
-handleData(); // Вызов функции для обработки данных
-
-const bot = new Telegraf('6366545078:AAFZjWTJXL4RQ3rG6yvesEj-X0CciRb1JoU');
-
-let messageInfo = "";
-
-bot.start((ctx) => {
-    ctx.replyWithMarkdown(`Привет, ${ctx.message.from.username}! С какой площадкой вам нужна помощь?`, startButtons);
-})
-
-bot.hears("Покупка Viomitra.Коммерческие торги", (ctx) => {
-    ctx.replyWithMarkdown('Какая подкатегория вас интересует?', categoryButtons);
-}) 
-
-bot.hears(/Покупка Viomitra.Банкротство/, (ctx) => {
-    ctx.reply(ctx, 'Вы выбрали категорию - Покупка. Выберите подкатегорию.');
-})
-
-bot.hears(/Регистрация Viomitra.Банкротство/, (ctx) => {
-    ctx.reply(ctx, 'Вы выбрали категорию - Регистрация. Выберите подкатегорию.');
-});
-
-bot.hears("Задать другой вопрос", (ctx) => {
-    ctx.replyWithMarkdown(`С какой площадкой Вам нужна помошь, ${ctx.message.from.username}`);
-})
-
-bot.hears('Бот помог', (ctx) => {
-    ctx.reply('Рады помочь!');
-});
-
-bot.hears('Связаться с оператором', (ctx) => {
-    let user = ctx.message.from;
-    let message;
-    if (messageInfo) {
-        message = `Пользователю ${user.last_name} ${user.last_name} - @${user.username} (${user.id}) требуется помощь. Проблема, которую выбрал пользователь: ${messageInfo}`;
-    } else {
-        message = `Пользователю ${user.last_name} ${user.last_name} нужна помощь @${ctx.message.from.username} (${user.id})`;
-    }
-    let chatId = 797596124;
-
-    bot.telegram.sendMessage(chatId, message).then(() => {
-        ctx.reply('С вами в ближайшее время свяжется оператор. Ожидайте ответа!', Markup.removeKeyboard());
-    })
-        .catch((error) => {
-            console.error('Error sending message:', error);
-            ctx.reply('Произошла ошибка при отправке сообщения');
-        });;
-});
-
-bot.launch().then(() => console.log('Started'));
-
-process.once('SIGINT', () => bot.stop('SIGINT'));
-process.once('SIGTERM', () => bot.stop('SIGTERM'));
-
-/*module.exports.handler = async function (event, context) {
-    const message = JSON.parse(event.body);
-    await bot.handleUpdate(message);
-    return {
-        statusCode: 200,
-        body: '',
-    };
-};*/
-
-/* bot.hears(faq.sites.bankrot.name, (ctx) => {
-    ctx.replyWithMarkdown(faq.sites.bankrot.value, buttons.replyParticipationBankrotMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(faq.sites.bankrot.participation.parirticipant.name, (ctx) => {
-    ctx.replyWithMarkdown(faq.sites.bankrot.participation.parirticipant.value, buttons.replyCategoriesBankrotMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(faq.sites.bankrot.participation.organizer.name, (ctx) => {
-    let user = ctx.message.from;
-    let message = `У пользователя-организатора ${user.last_name} ${user.first_name} - @${user.username} вопрос по Viomitra.Банкротство`
-    let chatId = 797596124;
-
-    bot.telegram.sendMessage(chatId, message).then(() => {
-        // После отправки сообщения можно обновить сообщение пользователя
-        ctx.reply('С вами свяжется оператор', Markup.removeKeyboard());
-    })
-    .catch((error) => {
-        console.error('Error sending message:', error);
-        ctx.reply('Произошла ошибка при отправке сообщения');
-    });;
-})
-
-bot.hears(state.categoriesBankrot.deposit.name, (ctx) => {
-    ctx.replyWithMarkdown(state.categoriesBankrot.deposit.value, buttons.replySubcategoriesDepositBankrotMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.categoriesBankrot.signature.name, (ctx) => {
-    ctx.replyWithMarkdown(state.categoriesBankrot.signature.value, buttons.replySubcategoriesSignatureBankrotMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.categoriesBankrot.applicationForParticipation.name, (ctx) => {
-    ctx.replyWithMarkdown(state.categoriesBankrot.applicationForParticipation.value, buttons.replySubcategoriesApplicationForParticipationBankrotMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.categoriesBankrot.registration.name, (ctx) => {
-    ctx.replyWithMarkdown(state.categoriesBankrot.registration.value, buttons.replySubcategoriesRegistrationBankrotMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.categoriesBankrot.technicalQuestion.name, (ctx) => {
-    ctx.replyWithMarkdown(state.categoriesBankrot.technicalQuestion.value, buttons.replySubcategoriesTechnicalQuestionBankrotMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.categoriesBankrot.trade.name, (ctx) => {
-    ctx.replyWithMarkdown(state.categoriesBankrot.trade.value, buttons.replySubcategoriesTradeMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.categoriesBankrot.technicalQuestion.name, (ctx) => {
-    ctx.replyWithMarkdown(state.categoriesBankrot.technicalQuestion.value, buttons.replySubcategoriesTechnicalQuestionBankrotMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesDepositBankrot.refundDeposit.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesDepositBankrot.refundDeposit.value, buttons.replyAnswersRefundDepositBankrotMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.categoriesBankrot.contacts.name, (ctx) => {
-    ctx.replyWithMarkdown(state.categoriesBankrot.contacts.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesDepositBankrot.refundDeposit.answers.destinationAccout.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesDepositBankrot.refundDeposit.answers.destinationAccout.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesDepositBankrot.refundDeposit.answers.otherDestinationAccount.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesDepositBankrot.refundDeposit.answers.otherDestinationAccount.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesDepositBankrot.refundDeposit.answers.refundApplicationProcessingPeriod.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesDepositBankrot.refundDeposit.answers.refundApplicationProcessingPeriod.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesDepositBankrot.paymentDeposit.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesDepositBankrot.paymentDeposit.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesSignatureBankrot.requiredDigitalSignatureType.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesSignatureBankrot.requiredDigitalSignatureType.value, buttons.replyAnswersRequiredDigitalSignatureTypeBankrotMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.platformRegistration.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.platformRegistration.value, buttons.replyPlatformRegistrationBankrotMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.registrationRejectionReceided.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.registrationRejectionReceided.value, buttons.replyRegistrationRejectionReceidedBankrotMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesSignatureBankrot.requiredDigitalSignatureType.answers.signatureForIndividuals.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesSignatureBankrot.requiredDigitalSignatureType.answers.signatureForIndividuals.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesSignatureBankrot.requiredDigitalSignatureType.answers.signatureForLegalEntitiesOrSoleProprietors.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesSignatureBankrot.requiredDigitalSignatureType.answers.signatureForLegalEntitiesOrSoleProprietors.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesSignatureBankrot.unableToSignDocumentsWithDigitalSignature.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesSignatureBankrot.unableToSignDocumentsWithDigitalSignature.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesSignatureBankrot.howToChangeCertificateInPersonalAccount.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesSignatureBankrot.howToChangeCertificateInPersonalAccount.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesSignatureBankrot.howToChangeCertificateInPersonalAccount.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesSignatureBankrot.howToChangeCertificateInPersonalAccount.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesApplicationForParticipationBankrot.applicationProcessingPeriod.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesApplicationForParticipationBankrot.applicationProcessingPeriod.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesApplicationForParticipationBankrot.viewingApplicationInPersonalAccount.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesApplicationForParticipationBankrot.viewingApplicationInPersonalAccount.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesApplicationForParticipationBankrot.submitApplicationForParticipation.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesApplicationForParticipationBankrot.submitApplicationForParticipation.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesApplicationForParticipationBankrot.whoCanSubmitApplicationForParticipation.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesApplicationForParticipationBankrot.whoCanSubmitApplicationForParticipation.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesApplicationForParticipationBankrot.withdrawApplicationForParticipation.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesApplicationForParticipationBankrot.withdrawApplicationForParticipation.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesApplicationForParticipationBankrot.editApplicationForParticipation.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesApplicationForParticipationBankrot.editApplicationForParticipation.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesApplicationForParticipationBankrot.noApplicationSubmittedForJoiningRegulation.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesApplicationForParticipationBankrot.noApplicationSubmittedForJoiningRegulation.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesApplicationForParticipationBankrot.noSignificationLegalActionsToSubmitApplication.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesApplicationForParticipationBankrot.noSignificationLegalActionsToSubmitApplication.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesApplicationForParticipationBankrot.expeditedApplicationReview.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesApplicationForParticipationBankrot.expeditedApplicationReview.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.submitApplicationForAdherenceToRegulation.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.submitApplicationForAdherenceToRegulation.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.applicationReviewTime.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.applicationReviewTime.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.applicationReviewTimeForAdherenceToRegulation.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.applicationReviewTimeForAdherenceToRegulation.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.applicationReviewTimeForLegalAction.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.applicationReviewTimeForLegalAction.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.notReceivedRegistrationNonificationOnEmail.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.notReceivedRegistrationNonificationOnEmail.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.regitrationGuide.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.regitrationGuide.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.withdrawRegistrationApplication.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.withdrawRegistrationApplication.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.expeditedRegistration.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.expeditedRegistration.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.registrationValidityPeriodOnETP.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.registrationValidityPeriodOnETP.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.platformRegistration.answers.positionInformationForIndividual.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.platformRegistration.answers.positionInformationForIndividual.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.platformRegistration.answers.receivedActivationCodeByEmail.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.platformRegistration.answers.receivedActivationCodeByEmail.value, buttons.replyFeedbackMarkup);
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.platformRegistration.answers.continuingRegistrationAfterActivationCode.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.platformRegistration.answers.continuingRegistrationAfterActivationCode.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.platformRegistration.answers.requiredDocumentsForRegistration.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.platformRegistration.answers.requiredDocumentsForRegistration.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.platformRegistration.answers.startingRegistrationProcess.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.platformRegistration.answers.startingRegistrationProcess.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.platformRegistration.answers.submittingRegistrationAndAdherenceApplicationSimultaneously.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.platformRegistration.answers.submittingRegistrationAndAdherenceApplicationSimultaneously.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.platformRegistration.answers.dataValidationInRegistrationApplication.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.platformRegistration.answers.dataValidationInRegistrationApplication.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.registrationRejectionReceided.answers.resubmittingRegostrationApplication.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.registrationRejectionReceided.answers.resubmittingRegostrationApplication.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.registrationRejectionReceided.answers.reattachingDocumentsAfterRejection.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.registrationRejectionReceided.answers.reattachingDocumentsAfterRejection.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.registrationRejectionReceided.answers.correctingDataAfterRejectionNotice.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.registrationRejectionReceided.answers.correctingDataAfterRejectionNotice.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesRegistrationBankrot.registrationRejectionReceided.answers.unableToIdentifyReasonForRejection.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesRegistrationBankrot.registrationRejectionReceided.answers.unableToIdentifyReasonForRejection.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesTechnicalQuestionBankrot.recommendedBrowserForUse.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesTechnicalQuestionBankrot.recommendedBrowserForUse.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesTechnicalQuestionBankrot.forgotPasswordForAccount.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesTechnicalQuestionBankrot.forgotPasswordForAccount.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesTechnicalQuestionBankrot.registrationValidityPeriodForETP.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesTechnicalQuestionBankrot.registrationValidityPeriodForETP.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesTradeBankrot.informationAndDocumentProvisionForTradingAndLot.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesTradeBankrot.informationAndDocumentProvisionForTradingAndLot.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesTradeBankrot.contactInformationOfTradingOrganizer.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesTradeBankrot.contactInformationOfTradingOrganizer.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesTradeBankrot.publicOfferFormTradingSearch.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesTradeBankrot.publicOfferFormTradingSearch.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesTradeBankrot.auctionFormTradingSearch.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesTradeBankrot.auctionFormTradingSearch.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesTradeBankrot.findingTradesOnElectronicPlatform.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesTradeBankrot.findingTradesOnElectronicPlatform.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-})
-
-bot.hears(state.subcategoriesTradeBankrot.howAndWhenToSubmitParticipationApplication.name, (ctx) => {
-    ctx.replyWithMarkdown(state.subcategoriesTradeBankrothowAndWhenToSubmitParticipationApplication.value, buttons.replyFeedbackMarkup);
-    messageInfo = ctx.message.text;
-}) */
+handleData(); */
