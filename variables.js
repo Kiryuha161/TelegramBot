@@ -31,10 +31,6 @@ let handleData = async() => {
             data.push({ category, subcategories: [{ name: subcategory, questions: [{ question, answer }] }] });
         }
     }
-
-    console.log(data[0].category);
-    console.log(data[0].subcategories.find((sub) => sub.name === 'Как зарегистрироваться'))
-    
 }
 
 module.exports = {

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "handle.js",
   "dependencies": {
+    "@telegraf/entity": "^0.5.0",
     "abort-controller": "^3.0.0",
     "buffer-alloc": "^1.2.0",
     "buffer-alloc-unsafe": "^1.1.0",

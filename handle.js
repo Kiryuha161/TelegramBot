@@ -1,4 +1,5 @@
 const { Telegraf } = require('telegraf');
+const { toHTML, toMarkdownV2 } = require("@telegraf/entity");
 const Markup = require('telegraf/markup');
 const { buttons } = require('./buttons.js')
 let state = require('./variables.js').state;
@@ -7,52 +8,296 @@ let handleData = require('./variables.js').handleData;
 const bot = new Telegraf('6366545078:AAFZjWTJXL4RQ3rG6yvesEj-X0CciRb1JoU');
 let messageInfo = "";
 
+const SPECIAL_CHARS = [
+    //'\\',
+    '_',
+    '*',
+    '[',
+    ']',
+    //'(',
+    //')',
+    '~',
+    '`',
+    //'>',
+    //'<',
+    '&',
+    '#',
+    '+',
+    //'-',
+    '=',
+    '|',
+    '{',
+    '}',
+    '.',
+    '!'
+]
+
+const escapeMarkdown = (text) => {
+    SPECIAL_CHARS.forEach(char => (text = text.replaceAll(char, `\\${char}`)))
+    return text
+}
+
+const getSubcategoriesButton = (chapter) => {
+    let subcategories = [];
+
+    const data = state.data.find(category => category.category === chapter);
+
+    if (data && Array.isArray(data.subcategories)) {
+        subcategories = data.subcategories;
+    }
+
+    let subcategoriesButton = Markup.keyboard(
+        subcategories.map(subcategory => Markup.button.callback(subcategory.name))
+    );
+
+    return subcategoriesButton;
+}
+
+const getQuestionsAndAnswers = (category, subcategoryIndex) => {
+    let questionsAndAnswers = {};
+
+    const categoryData = state.data.find(item => item.category === category);
+    if (categoryData && Array.isArray(categoryData.subcategories) && categoryData.subcategories.length > subcategoryIndex) {
+        const subcategory = categoryData.subcategories[subcategoryIndex];
+        questionsAndAnswers.subcategory = subcategory.name;
+        questionsAndAnswers.questions = subcategory.questions.map(question => question.question);
+        questionsAndAnswers.answers = subcategory.questions.map(question => question.answer);
+    }
+
+    return questionsAndAnswers;
+}
+
+const feedbackButton = Markup.keyboard([
+    Markup.button.callback("Бот помог"),
+    Markup.button.callback("Связаться с оператором"),
+    Markup.button.callback("Задать другой вопрос")
+])
+
 const runBot = async () => {
     await handleData();
     console.log(state.data);
+
     let sitesButton = Markup.keyboard(state.sites.map(site => Markup.button.callback(site)));
     const uniqueCategories = new Set(state.data.map(category => category.category));
 
-    let realtyCategories = Markup.keyboard(
+    let realtyCategoriesButton = Markup.keyboard(
         [...uniqueCategories]
-          .filter(category => category) // Фильтрация пустых или неопределенных значений
-          .map(category => Markup.button.callback(category))
-      );
+            .filter(category => category) // Фильтрация пустых или неопределенных значений
+            .map(category => Markup.button.callback(category))
+    );
 
-      let subcategoriesRegistration = [];
-      const registrationCategory = "Регистрация Viomitra.Коммерческие торги";
-      
-      // Находим категорию "Регистрация" в state.data
-      const registrationData = state.data.find(category => category.category === registrationCategory);
-      
-      if (registrationData && Array.isArray(registrationData.subcategories)) {
-          // Если найдена категория "Регистрация" и подкатегории - массив
-          subcategoriesRegistration = registrationData.subcategories;
-      }
-      
-      let realtySubcategoriesRegistrationButton = Markup.keyboard(
-          subcategoriesRegistration.map(subcategory => Markup.button.callback(subcategory.name))
-      );
-      
+
+    let realtySubcategoriesRegistrationButton = getSubcategoriesButton(String(state.data[0].category));
+    let realtySubcategoriesBuyButton = getSubcategoriesButton(String(state.data[1].category));
+    let realtySubcategoriesPossibleBuyerButton = getSubcategoriesButton(String(state.data[2].category));
+    let realtySubcategoriesSellButton = getSubcategoriesButton(String(state.data[3].category));
+    let realtySubcategoriesPossibleSellerButton = getSubcategoriesButton(String(state.data[4].category));
+    let realtySubcategoriesTechnicalQuestionsButton = getSubcategoriesButton(String(state.data[5].category));
+    let realtySubcagtegoriesReviewButton = getSubcategoriesButton(String(state.data[6].category));
+    let realtySubcategoriesLegalForceButton = getSubcategoriesButton(String(state.data[8].category));
+
+    let realtyQuestionDiscussionLotBeforBuyButton = getQuestionsAndAnswers(state.data[1].category, 1).questions;
 
     bot.start((ctx) => {
         ctx.replyWithMarkdown(`Привет, ${ctx.message.from.username}! С какой площадкой вам нужна помощь?`, sitesButton);
     })
 
     bot.hears(String(state.sites[1]), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Коммерческие торги", realtyCategories);
+        ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Коммерческие торги", realtyCategoriesButton);
     })
 
     bot.hears(String(state.data[0].category), (ctx) => {
         ctx.replyWithMarkdown("Вы выбрали регистрацию. Выберите подкатегорию", realtySubcategoriesRegistrationButton);
     })
 
+    bot.hears(String(state.data[1].category), (ctx) => {
+        ctx.replyWithMarkdown("Вы выбрали покупку. Выберите подкатегорию", realtySubcategoriesBuyButton);
+    });
+
+    bot.hears(String(state.data[2].category), (ctx) => {
+        ctx.replyWithMarkdown("Вы выбрали возможности покупателя. Выберите подкатегорию", realtySubcategoriesPossibleBuyerButton);
+    });
+
+    bot.hears(String(state.data[3].category), (ctx) => {
+        ctx.replyWithMarkdown("Вы выбрали продажу. Выберите подкатегорию", realtySubcategoriesSellButton);
+    });
+
+    bot.hears(String(state.data[4].category), (ctx) => {
+        ctx.replyWithMarkdown("Вы выбрали возможности продавца. Выберите подкатегорию", realtySubcategoriesPossibleSellerButton);
+    });
+
+    bot.hears(String(state.data[5].category), (ctx) => {
+        ctx.replyWithMarkdown("Вы выбрали технические вопросы. Выберите подкатегорию", realtySubcategoriesTechnicalQuestionsButton);
+    });
+
+    bot.hears(String(state.data[6].category), (ctx) => {
+        ctx.replyWithMarkdown("Вы выбрали отзывы. Выберите подкатегорию", realtySubcagtegoriesReviewButton);
+    });
+
+    bot.hears(String(state.data[8].category), (ctx) => {
+        ctx.replyWithMarkdown("Вы выбрали сделки с юр.действиями. Выберите подкатегорию", realtySubcategoriesLegalForceButton);
+    });
+
+    //Как зарегистрироваться
+    bot.hears(state.data[0].subcategories[0].name, (ctx) => {
+        ctx.replyWithMarkdown(getQuestionsAndAnswers(state.data[0].category, 0).answers[0], feedbackButton);
+    });
+
+    //Что такое псевдоним
+    bot.hears(state.data[0].subcategories[1].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[0].category, 1).answers[0], feedbackButton));
+    });
+
+    //Как купить
+    bot.hears(state.data[1].subcategories[0].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[1].category, 0).answers[0], feedbackButton));
+    });
+
+    //Обсуждение лота до покупки
+    bot.hears(state.data[1].subcategories[1].name, (ctx) => {
+        ctx.replyWithMarkdown("Вы выбрали обсуждение лота до покупки. Выберите вопрос.", Markup.keyboard(realtyQuestionDiscussionLotBeforBuyButton));
+    });
+
+
+    const test = getQuestionsAndAnswers(state.data[1].category, 3).questions[0];
+    console.log();
+
+    //Поиски и фильтры 
+    bot.hears(state.data[1].subcategories[2].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[1].category, 2).answers[0], feedbackButton));
+    });
+
+    //Прохождение торгов
+    bot.hears(state.data[1].subcategories[3].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[1].category, 3).answers[0], feedbackButton));
+    });
+
+    //Избранные лоты
+    bot.hears(state.data[2].subcategories[0].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[2].category, 0).answers[0], feedbackButton));
+    });
+
+    //Чёрный список продавцов
+    bot.hears(state.data[2].subcategories[1].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[2].category, 1).answers[0], feedbackButton));
+    });
+
+    //Как продавать
+    bot.hears(state.data[3].subcategories[0].name, (ctx) => {
+        //
+    });
+
+    //Теги-инструменты
+    bot.hears(state.data[3].subcategories[1].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[3].category, 1).answers[0], feedbackButton));
+    });
+
+    //Режим отпуск
+    bot.hears(state.data[3].subcategories[2].name, (ctx) => {
+        //
+    });
+
+    //Инструкция заполнения лота
+    bot.hears(state.data[3].subcategories[3].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[3].category, 3).answers[0], feedbackButton));
+    });
+
+    //Чёрный список покупателей
+    bot.hears(state.data[4].subcategories[0].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[4].category, 0).answers[0], feedbackButton));
+    });
+
+    //Ограничение по рейтингу покупателей
+    bot.hears(state.data[4].subcategories[1].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[4].category, 1).answers[0], feedbackButton));
+    });
+
+    //Антиснайпер
+    bot.hears(state.data[4].subcategories[2].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[4].category, 2).answers[0], feedbackButton));
+    });
+
+    //Замена пароля
+    bot.hears(state.data[5].subcategories[0].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[5].category, 0).answers[0], feedbackButton));
+    });
+
+    //Роль емайла
+    bot.hears(state.data[5].subcategories[1].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[5].category, 1).answers[0], feedbackButton));
+    });
+
+    //Восстановление доступа
+    bot.hears(state.data[5].subcategories[2].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[5].category, 2).answers[0], feedbackButton));
+    });
+
+    //Проблема с авторизацией
+    bot.hears(state.data[5].subcategories[3].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[5].category, 3).answers[0], feedbackButton));
+    });
+
+    //Аватарка пользователя
+    bot.hears(state.data[5].subcategories[4].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[5].category, 4).answers[0], feedbackButton));
+    });
+
+    //Активность
+    bot.hears(state.data[5].subcategories[5].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[5].category, 5).answers[0], feedbackButton));
+    });
+
+    //Уведомление
+    bot.hears(state.data[5].subcategories[6].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[5].category, 6).answers[0], feedbackButton));
+    });
+
+    //Какой браузер
+    bot.hears(state.data[5].subcategories[7].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[5].category, 7).answers[0], feedbackButton));
+    });
+
+    //Что такое отзыв
+    bot.hears(state.data[6].subcategories[0].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[6].category, 0).answers[0], feedbackButton));
+    });
+
+    //Что должен содержать отзыв
+    bot.hears(state.data[6].subcategories[1].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[6].category, 1).answers[0], feedbackButton));
+    });
+
+    //Как оставить отзыв
+    bot.hears(state.data[6].subcategories[2].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[6].category, 2).answers[0], feedbackButton));
+    });
+
+    //тарифы
+    bot.hears(state.data[7].category, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[7].category, 0).answers[0], feedbackButton));
+    });
+
+    //Какая эцп
+    bot.hears(state.data[8].subcategories[0].name, (ctx) => {
+        //
+    });
+
+    //Не получается подписать
+    bot.hears(state.data[8].subcategories[1].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[8].category, 1).answers[0], feedbackButton));
+    });
+
+    //Как поменять сертификат
+    bot.hears(state.data[8].subcategories[2].name, (ctx) => {
+        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswers(state.data[8].category, 2).answers[0], feedbackButton));
+    });
+
     bot.hears("Задать другой вопрос", (ctx) => {
-        ctx.replyWithMarkdown(`С какой площадкой Вам нужна помошь, ${ctx.message.from.username}`);
+        ctx.replyWithMarkdown(`С какой площадкой Вам нужна помошь, ${ctx.message.from.username}`, sitesButton);
     })
 
     bot.hears('Бот помог', (ctx) => {
-        ctx.reply('Рады помочь!');
+        ctx.reply('Рады помочь!', Markup.removeKeyboard());
     });
 
     bot.hears('Связаться с оператором', (ctx) => {
