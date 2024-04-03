@@ -1,7 +1,5 @@
 const { Telegraf } = require('telegraf');
-const { toHTML, toMarkdownV2 } = require("@telegraf/entity");
 const Markup = require('telegraf/markup');
-const { buttons } = require('./buttons.js')
 let state = require('./variables.js').state;
 let handleData = require('./variables.js').handleData;
 
@@ -30,7 +28,7 @@ const SPECIAL_CHARS = [
     '}',
     '.',
     '!',
-    '-',
+    //'-',
     '\''
 ]
 
@@ -249,7 +247,7 @@ const runBot = async () => {
 
     //Как посмотреть заявку
     bot.hears(state.dataRosim[2].subcategories[1].name, (ctx) => {
-        ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[1].questions[0].answer, feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRosim(state.dataRosim[2].category, 1).answers, feedbackButton);
     });
 
     //Как подать заявку
@@ -261,10 +259,6 @@ const runBot = async () => {
     bot.hears(state.dataRosim[2].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[3].questions[0].answer, feedbackButton);
     });
-
-    let test = state.dataBankrot[2].subcategories[3].questions[0].answer;
-    console.log(test);
-    //Тут какая то проблема.
 
     //Как отозвать заявку
     bot.hears(state.dataRosim[2].subcategories[4].name, (ctx) => {
@@ -288,7 +282,177 @@ const runBot = async () => {
 
     //ускорение
     bot.hears(state.dataRosim[2].subcategories[8].name, (ctx) => {
-        ctx.replyWithMarkdown(state.dataBankrot[20].subcategories[8].questions[0].answer, feedbackButton);
+        ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[8].questions[0].answer, feedbackButton);
+    });
+
+    //Как подать заявку регламент
+    bot.hears(state.dataRosim[3].subcategories[0].name, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[0].questions[0].answer, feedbackButton);
+    });
+
+    //Время рассмотрения заявки
+    bot.hears(state.dataRosim[3].subcategories[1].name, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[1].questions[0].answer, feedbackButton);
+    });
+
+    //Время рассмотрения заявки на присоедниение
+    bot.hears(state.dataRosim[3].subcategories[2].name, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[2].questions[0].answer, feedbackButton);
+    });
+
+    //Время рассмотрения на юр действия
+    bot.hears(state.dataRosim[3].subcategories[3].name, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[3].questions[0].answer, feedbackButton);
+    });
+
+    //Регистрация на площадке
+    bot.hears(state.dataRosim[3].subcategories[4].name, (ctx) => {
+        ctx.replyWithMarkdown("Вы выбрали регистрация на площадке. Выберите вопрос.", Markup.keyboard(getQuestionsAndAnswersRosim(state.dataRosim[3].category, 4).questions))
+    });
+
+    //Какие данные заполнять
+    bot.hears(state.dataRosim[3].subcategories[4].questions[0].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[0].answer);
+    })
+
+    //Получлили на почту код
+    bot.hears(state.dataRosim[3].subcategories[4].questions[1].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[1].answer);
+    })
+
+    //Начал регистрацию по этп
+    bot.hears(state.dataRosim[3].subcategories[4].questions[2].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[2].answer);
+    })
+
+    //Какие документы по регистрации необходимы
+    bot.hears(state.dataRosim[3].subcategories[4].questions[3].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[3].answer);
+    })
+
+    //Как начать регистрацию
+    bot.hears(state.dataRosim[3].subcategories[4].questions[4].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[4].answer);
+    })
+
+    //Можно ли подать одновременно заявку
+    bot.hears(state.dataRosim[3].subcategories[4].questions[5].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[5].answer);
+    })
+
+    //Проверка заполненных данных
+    bot.hears(state.dataRosim[3].subcategories[4].questions[6].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[6].answer);
+    })
+
+    //Что делать если не пришло удивление
+    bot.hears(state.dataRosim[3].subcategories[5].name, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[5].questions[0].answer, feedbackButton);
+    });
+
+    //Руководство по регистрации
+    bot.hears(state.dataRosim[3].subcategories[6].name, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[6].questions[0].answer, feedbackButton);
+    });
+
+    //Поступил отказ
+    bot.hears(state.dataRosim[3].subcategories[7].name, (ctx) => {
+        ctx.replyWithMarkdown('Вы выбрали поступил отказ в регистрации. Выберите вопрос.', Markup.keyboard(getQuestionsAndAnswersRosim(state.dataRosim[3].category, 7).questions))
+    });
+
+    //Как повторно подать заявку
+    bot.hears(state.dataRosim[3].subcategories[7].questions[0].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[7].questions[0].answer, feedbackButton);
+    });
+
+    //Необходимо ли после отказа
+    bot.hears(state.dataRosim[3].subcategories[7].questions[1].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[7].questions[1].answer, feedbackButton);
+    });
+
+    //Если в отказе указано что вы не правильно указали данные
+    bot.hears(state.dataRosim[3].subcategories[7].questions[2].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[7].questions[2].answer, feedbackButton);
+    });
+    
+    //Не видите причину отказа 
+    bot.hears(state.dataRosim[3].subcategories[7].questions[3].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[7].questions[3].answer, feedbackButton);
+    });
+
+    //Отозвать заявку
+    bot.hears(state.dataRosim[3].subcategories[8].name, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[8].questions[0].answer, feedbackButton);
+    });
+
+    //Ускорение регистрации
+    bot.hears(state.dataRosim[3].subcategories[9].name, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[9].questions[0].answer, feedbackButton);
+    });
+
+    //Срок действия регистрации
+    bot.hears(state.dataRosim[3].subcategories[10].name, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[10].questions[0].answer, feedbackButton);
+    });
+
+    //какой браузер
+    bot.hears(state.dataRosim[4].subcategories[0].name, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[4].subcategories[0].questions[0].answer, feedbackButton);
+    });
+
+    //забыл пароль
+    bot.hears(state.dataRosim[4].subcategories[1].name, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[4].subcategories[1].questions[0].answer, feedbackButton);
+    });
+
+    //срок действия регистрации эцп
+    bot.hears(state.dataRosim[4].subcategories[2].name, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[4].subcategories[2].questions[0].answer, feedbackButton);
+    });
+
+    //Какая эцп нужна
+    bot.hears(state.dataRosim[5].subcategories[0].name, (ctx) => {
+        ctx.replyWithMarkdown('Вы выбрали какая эцп нужна. Выберите вопрос.', Markup.keyboard(getQuestionsAndAnswersRosim(state.dataRosim[5].category, 0).questions))
+    });
+
+    //эцп для фл
+    bot.hears(state.dataRosim[5].subcategories[0].questions[0].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[0].questions[0].answer, feedbackButton);
+    });
+
+    //эцп для юл
+    bot.hears(state.dataRosim[5].subcategories[0].questions[1].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[0].questions[1].answer, feedbackButton);
+    });
+
+    //Не получается подписать
+    bot.hears(state.dataRosim[5].subcategories[1].name, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[1].questions[0].answer, feedbackButton);
+    });
+
+    //Как поменять сертификат
+    bot.hears(state.dataRosim[5].subcategories[2].name, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[2].questions[0].answer, feedbackButton);
+    });
+
+    //Предоставление информации
+    bot.hears(state.dataRosim[6].subcategories[0].name, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[0].questions[0].answer, feedbackButton);
+    });
+
+    //Контакты организатора
+    bot.hears(state.dataRosim[6].subcategories[1].name, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[1].questions[0].answer, feedbackButton);
+    });
+
+    //Как найти торг
+    bot.hears(state.dataRosim[6].subcategories[2].name, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[2].questions[0].answer, feedbackButton);
+    });
+
+    //Как и когда подать заявку на участие
+    bot.hears(state.dataRosim[6].subcategories[3].name, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[3].questions[0].answer, feedbackButton);
     });
 
     //БАНКРОТСТВО
@@ -339,7 +503,7 @@ const runBot = async () => {
 
     //Задаток на иной лс
     bot.hears(state.dataBankrot[0].subcategories[0].questions[1].question, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(state.dataBankrot[0].subcategories[0].questions[1].answer), feedbackButton);
+        ctx.replyWithMarkdown(state.dataBankrot[0].subcategories[0].questions[1].answer, feedbackButton);
     });
 
     //Срок рассмотрения задаток
@@ -575,7 +739,7 @@ const runBot = async () => {
 
     //Как купить
     bot.hears(state.data[1].subcategories[0].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[1].category, 0).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[1].category, 0).answers[0], feedbackButton);
     });
 
     //Обсуждение лота до покупки
@@ -585,22 +749,22 @@ const runBot = async () => {
 
     //Поиски и фильтры 
     bot.hears(state.data[1].subcategories[2].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[1].category, 2).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[1].category, 2).answers[0], feedbackButton);
     });
 
     //Прохождение торгов
     bot.hears(state.data[1].subcategories[3].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[1].category, 3).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[1].category, 3).answers[0], feedbackButton);
     });
 
     //Избранные лоты
     bot.hears(state.data[2].subcategories[0].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[2].category, 0).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[2].category, 0).answers[0], feedbackButton);
     });
 
     //Чёрный список продавцов
     bot.hears(state.data[2].subcategories[1].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[2].category, 1).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[2].category, 1).answers[0], feedbackButton);
     });
 
     //Как продавать
@@ -643,87 +807,87 @@ const runBot = async () => {
 
     //Теги-инструменты
     bot.hears(state.data[3].subcategories[1].name, (ctx) => {
-        ctx.replyWithMarkdownV2(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[3].category, 1).answers[0]), feedbackButton);
+        ctx.replyWithMarkdownV2(getQuestionsAndAnswersRealty(state.data[3].category, 1).answers[0], feedbackButton);
     });
 
     //Режим отпуск
     bot.hears(state.data[3].subcategories[2].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[3].category, 2).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[3].category, 2).answers[0], feedbackButton);
     });
 
     //Инструкция заполнения лота
     bot.hears(state.data[3].subcategories[3].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[3].category, 3).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[3].category, 3).answers[0], feedbackButton);
     });
 
     //Чёрный список покупателей
     bot.hears(state.data[4].subcategories[0].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[4].category, 0).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[4].category, 0).answers[0], feedbackButton);
     });
 
     //Ограничение по рейтингу покупателей
     bot.hears(state.data[4].subcategories[1].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[4].category, 1).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[4].category, 1).answers[0], feedbackButton);
     });
 
     //Антиснайпер
     bot.hears(state.data[4].subcategories[2].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[4].category, 2).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[4].category, 2).answers[0], feedbackButton);
     });
 
     //Замена пароля
     bot.hears(state.data[5].subcategories[0].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 0).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 0).answers[0], feedbackButton);
     });
 
     //Роль емайла
     bot.hears(state.data[5].subcategories[1].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 1).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 1).answers[0], feedbackButton);
     });
 
     //Восстановление доступа
     bot.hears(state.data[5].subcategories[2].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 2).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 2).answers[0], feedbackButton);
     });
 
     //Проблема с авторизацией
     bot.hears(state.data[5].subcategories[3].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 3).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 3).answers[0], feedbackButton);
     });
 
     //Аватарка пользователя
     bot.hears(state.data[5].subcategories[4].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 4).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 4).answers[0], feedbackButton);
     });
 
     //Активность
     bot.hears(state.data[5].subcategories[5].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 5).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 5).answers[0], feedbackButton);
     });
 
     //Уведомление
     bot.hears(state.data[5].subcategories[6].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 6).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 6).answers[0], feedbackButton);
     });
 
     //Какой браузер
     bot.hears(state.data[5].subcategories[7].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 7).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 7).answers[0], feedbackButton);
     });
 
     //Что такое отзыв
     bot.hears(state.data[6].subcategories[0].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[6].category, 0).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[6].category, 0).answers[0], feedbackButton);
     });
 
     //Что должен содержать отзыв
     bot.hears(state.data[6].subcategories[1].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[6].category, 1).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[6].category, 1).answers[0], feedbackButton);
     });
 
     //Как оставить отзыв
     bot.hears(state.data[6].subcategories[2].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[6].category, 2).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[6].category, 2).answers[0], feedbackButton);
     });
 
     //тарифы
@@ -748,12 +912,12 @@ const runBot = async () => {
 
     //Не получается подписать
     bot.hears(state.data[8].subcategories[1].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[8].category, 1).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[8].category, 1).answers[0], feedbackButton);
     });
 
     //Как поменять сертификат
     bot.hears(state.data[8].subcategories[2].name, (ctx) => {
-        ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[8].category, 2).answers[0]), feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[8].category, 2).answers[0], feedbackButton);
     });
 
     bot.hears("Задать другой вопрос", (ctx) => {
