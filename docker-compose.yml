@@ -3,3 +3,5 @@ services:
   telegram-bot:
     build: .
     container_name: telegram-bot
+  ports:
+    - "8081:8080"
