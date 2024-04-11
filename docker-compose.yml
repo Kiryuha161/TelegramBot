@@ -4,4 +4,9 @@ services:
     build: .
     container_name: telegram-bot
     ports:
-      - "8081:8080"
+      - "3000:3000"
+    networks:
+      nginx_nginx-proxy-manager:
+networks:
+  nginx_nginx-proxy-manager:
+    external: true
