@@ -4,7 +4,7 @@ let state = require('./variables.js').state;
 let handleData = require('./variables.js').handleData;
 const http = require('http');
 
-const bot = new Telegraf('6366545078:AAFZjWTJXL4RQ3rG6yvesEj-X0CciRb1JoU');
+const bot = new Telegraf('7003796600:AAGb5yvtAOPefwtTArVgVPQMGxKl-G2JzNY');
 let messageInfo = "";
 
 const SPECIAL_CHARS = [
@@ -1120,9 +1120,9 @@ runBot()
     .then(() => console.log('Данные успешно обработаны!'))
     .catch((error) => console.error('Ошибка обработки данных:', error));;
 
-bot.telegram.setWebhook('https://pro.viomitra.ru');
+bot.telegram.setWebhook('https://pro.viomitra.ru/');
 
-const server = http.createServer(bot.webhookCallback('https://pro.viomitra.ru'));
+const server = http.createServer(bot.webhookCallback('https://pro.viomitra.ru/'));
 
 server.listen(443, () => {
   console.log('Server is running on port 443');
