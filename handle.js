@@ -2,6 +2,7 @@ const { Telegraf } = require('telegraf');
 const Markup = require('telegraf/markup');
 let state = require('./variables.js').state;
 let handleData = require('./variables.js').handleData;
+const http = require('http');
 
 const bot = new Telegraf('6366545078:AAFZjWTJXL4RQ3rG6yvesEj-X0CciRb1JoU');
 let messageInfo = "";
@@ -535,7 +536,7 @@ const runBot = async () => {
     bot.hears(state.dataRosim[3].subcategories[7].questions[2].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[7].questions[2].answer, feedbackButton);
     });
-    
+
     //Не видите причину отказа 
     bot.hears(state.dataRosim[3].subcategories[7].questions[3].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[7].questions[3].answer, feedbackButton);
@@ -1118,6 +1119,14 @@ const runBot = async () => {
 runBot()
     .then(() => console.log('Данные успешно обработаны!'))
     .catch((error) => console.error('Ошибка обработки данных:', error));;
+
+bot.telegram.setWebhook('https://pro.viomitra.ru');
+
+const server = http.createServer(bot.webhookCallback('https://pro.viomitra.ru'));
+
+server.listen(443, () => {
+  console.log('Server is running on port 443');
+});
 
 bot.launch().then(() => console.log('Started'));
 
