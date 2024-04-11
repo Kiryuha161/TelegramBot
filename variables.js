@@ -1,15 +1,17 @@
 const Exceljs = require('exceljs');
 
-let data = []; 
+let data = [];
 let dataBankrot = [];
 let dataRosim = [];
+let dataArt = [];
 let sites = [
     "Viomitra.Банкротство",
     "Viomitra.Коммерческие торги",
-    "Viomitra.Росимущество"
+    "Viomitra.Росимущество",
+    "Viomitra.Арт"
 ]
 
-let handleData = async() => {
+let handleData = async () => {
     const workbook = new Exceljs.Workbook();
     await workbook.xlsx.readFile('./excelQuestions.xlsx');
     const worksheet = workbook.getWorksheet('Пример вопросов');
@@ -76,6 +78,23 @@ let handleData = async() => {
             dataRosim.push({ category, subcategories: [{ name: subcategory, questions: [{ question, answer }] }] });
         }
     }
+
+    await workbook.xlsx.readFile('./artQuestions.xlsx');
+    const worksheetArt = workbook.getWorksheet('Пример вопросов - арт');
+
+    for (let i = 1; i <= worksheetArt.lastRow.number; i++) {
+        const category = worksheetArt.getCell(`A${i}`).value;
+        const question = worksheetArt.getCell(`B${i}`).value;
+        const answer = worksheetArt.getCell(`C${i}`).value;
+
+        const existingCategory = dataArt.find((item) => item.category === category);
+
+        if (existingCategory) {
+            existingCategory.questions.push({ question, answer });
+        } else {
+            dataArt.push({ category, questions: [{ question, answer }] });
+        }
+    }
 }
 
 module.exports = {
@@ -84,6 +103,7 @@ module.exports = {
         data: data,
         sites: sites,
         dataBankrot: dataBankrot,
-        dataRosim: dataRosim
+        dataRosim: dataRosim,
+        dataArt: dataArt
     }
 }

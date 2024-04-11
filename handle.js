@@ -127,6 +127,19 @@ const getQuestionsAndAnswersRosim = (category, subcategoryIndex) => {
     return questionsAndAnswers;
 }
 
+const getQuestionsAndAnswersArt = (category) => {
+    let questionsAndAnswers = {};
+
+    const categoryData = state.dataArt.find(item => item.category === category);
+    if (categoryData) {
+        questionsAndAnswers.category = categoryData.category;
+        questionsAndAnswers.questions = categoryData.questions.map(question => question.question);
+        questionsAndAnswers.answers = categoryData.questions.map(question => question.answer);
+    }
+
+    return questionsAndAnswers;
+}
+
 const feedbackButton = Markup.keyboard([
     Markup.button.callback("Бот помог"),
     Markup.button.callback("Связаться с оператором"),
@@ -135,12 +148,13 @@ const feedbackButton = Markup.keyboard([
 
 const runBot = async () => {
     await handleData();
-    console.log(state.dataRosim);
+    console.log(state.dataArt);
 
     let sitesButton = Markup.keyboard(state.sites.map(site => Markup.button.callback(site)));
     const uniqueRealtyCategories = new Set(state.data.map(category => category.category));
     const uniqueBankrotCategories = new Set(state.dataBankrot.map(category => category.category));
     const uniqueRosimCategories = new Set(state.dataRosim.map(category => category.category));
+    const uniqueArtCategories = new Set(state.dataArt.map(category => category.category))
 
     let realtyCategoriesButton = Markup.keyboard(
         [...uniqueRealtyCategories]
@@ -156,6 +170,12 @@ const runBot = async () => {
 
     let rosimCategoriesButton = Markup.keyboard(
         [...uniqueRosimCategories]
+            .filter(category => category)
+            .map(category => Markup.button.callback(category))
+    )
+
+    let artCategoriesButton = Markup.keyboard(
+        [...uniqueArtCategories]
             .filter(category => category)
             .map(category => Markup.button.callback(category))
     )
@@ -185,7 +205,13 @@ const runBot = async () => {
     let rosimSubcategoriesTradeButtons = getRosimSubcategoriesButtons(String(state.dataRosim[6].category));
 
     bot.start((ctx) => {
-        ctx.replyWithMarkdown(`Привет, ${ctx.message.from.username}! С какой площадкой вам нужна помощь?`, sitesButton);
+        if (ctx.message.from.username) {
+            ctx.replyWithMarkdown(`Привет, ${ctx.message.from.username}! С какой площадкой вам нужна помощь?`, sitesButton);
+        } else if (ctx.message.from.first_name) {
+            ctx.replyWithMarkdown(`Привет, ${ctx.message.from.first_name}! С какой площадкой вам нужна помощь?`, sitesButton);
+        } else {
+            ctx.replyWithMarkdown('Привет! С какой площадкой вам нужна помощь?', sitesButton)
+        }
     })
 
     //ВЫБОР САЙТОВ
@@ -200,6 +226,141 @@ const runBot = async () => {
     bot.hears(String(state.sites[2]), (ctx) => {
         ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Росимущество", rosimCategoriesButton);
     })
+
+    bot.hears(String(state.sites[3]), (ctx) => {
+        ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Арт. Выберите категорию вопроса", artCategoriesButton);
+    })
+
+    //АРТ
+    bot.hears(String(state.dataArt[0].category), (ctx) => {
+        ctx.replyWithMarkdown("Вы выбрали регистрация. Выберите вопрос.", Markup.keyboard(getQuestionsAndAnswersArt(state.dataArt[0].category).questions))
+    })
+
+    bot.hears(String(state.dataArt[1].category), (ctx) => {
+        ctx.replyWithMarkdown("Вы выбрали личный кабинет. Выберите вопрос.", Markup.keyboard(getQuestionsAndAnswersArt(state.dataArt[1].category).questions))
+    })
+
+    bot.hears(String(state.dataArt[2].category), (ctx) => {
+        ctx.replyWithMarkdown("Вы выбрали доставка. Выберите вопрос.", Markup.keyboard(getQuestionsAndAnswersArt(state.dataArt[2].category).questions))
+    })
+
+    bot.hears(String(state.dataArt[3].category), (ctx) => {
+        ctx.replyWithMarkdown("Вы выбрали размещение объявления. Выберите вопрос.", Markup.keyboard(getQuestionsAndAnswersArt(state.dataArt[3].category).questions))
+    })
+
+    bot.hears(String(state.dataArt[4].category), (ctx) => {
+        ctx.replyWithMarkdown("Вы выбрали стоимость. Выберите вопрос.", Markup.keyboard(getQuestionsAndAnswersArt(state.dataArt[4].category).questions))
+    })
+
+    bot.hears(String(state.dataArt[5].category), (ctx) => {
+        ctx.replyWithMarkdown("Вы выбрали оплата. Выберите вопрос.", Markup.keyboard(getQuestionsAndAnswersArt(state.dataArt[5].category).questions))
+    })
+
+    //Как я могу зарегистрироваться как самозанятый, фл, юл, ип
+    bot.hears(state.dataArt[0].questions[0].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[0].questions[0].answer, feedbackButton)
+    })
+
+    //регистрация на площадке
+    bot.hears(state.dataArt[0].questions[1].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[0].questions[1].answer, feedbackButton)
+    })
+
+    //какая нужна эцп
+    bot.hears(state.dataArt[1].questions[0].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[1].questions[0].answer, feedbackButton)
+    })
+
+
+    //какие данные заполнять
+    bot.hears(state.dataArt[1].questions[1].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[1].questions[1].answer, feedbackButton)
+    })
+
+
+    //получение на почту активации
+    bot.hears(state.dataArt[1].questions[2].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[1].questions[2].answer, feedbackButton)
+    })
+
+    //Кто осуществляет доставку
+    bot.hears(state.dataArt[2].questions[0].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[2].questions[0].answer, feedbackButton)
+    })
+
+
+    //На ком лежит ответственность по доставке
+    bot.hears(state.dataArt[2].questions[1].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[2].questions[1].answer, feedbackButton)
+    })
+
+
+    //Будет ли страховка по доставке
+    bot.hears(state.dataArt[2].questions[2].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[2].questions[2].answer, feedbackButton)
+    })
+
+
+    //Доставка самолётом возможна
+    bot.hears(state.dataArt[2].questions[3].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[2].questions[3].answer, feedbackButton)
+    })
+
+    //Кто будет платить за торги
+    bot.hears(state.dataArt[3].questions[0].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[3].questions[0].answer, feedbackButton)
+    })
+
+    //Какой лучше вид аукциона выбрать
+    bot.hears(state.dataArt[3].questions[1].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[3].questions[1].answer, feedbackButton)
+    })
+
+    //Ювелирка
+    bot.hears(state.dataArt[3].questions[2].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[3].questions[2].answer, feedbackButton)
+    })
+
+    //Какую цену указывать
+    bot.hears(state.dataArt[4].questions[0].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[4].questions[0].answer, feedbackButton)
+    })
+
+    //Может ли цена понизиться
+    bot.hears(state.dataArt[4].questions[1].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[4].questions[1].answer, feedbackButton)
+    })
+
+    //какой процент берет митра
+    bot.hears(state.dataArt[5].questions[0].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[5].questions[0].answer, feedbackButton)
+    })
+
+    //какой процент по результатам торгов
+    bot.hears(state.dataArt[5].questions[1].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[5].questions[1].answer, feedbackButton)
+    })
+
+    //какая выгода для вас
+    bot.hears(state.dataArt[5].questions[2].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[5].questions[2].answer, feedbackButton)
+    })
+
+    //как будет списываться комиссия
+    bot.hears(state.dataArt[5].questions[3].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[5].questions[3].answer, feedbackButton)
+    })
+
+    //какой счёт указывать
+    bot.hears(state.dataArt[5].questions[4].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[5].questions[4].answer, feedbackButton)
+    })
+
+    //на чей расчётный счёт будет поступать оплата
+    bot.hears(state.dataArt[5].questions[5].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataArt[5].questions[5].answer, feedbackButton)
+    })
+
 
     //РОСИМУЩЕСТВО
     bot.hears(String(state.dataRosim[0].category), (ctx) => {
@@ -797,7 +958,7 @@ const runBot = async () => {
         let chatId = 797596124;
 
         bot.telegram.sendMessage(chatId, message).then(() => {
-            ctx.reply('С вами в ближайшее время свяжется оператор. Ожидайте ответа!', Markup.removeKeyboard());
+            ctx.replyWithMarkdown('С вами в ближайшее время свяжется оператор. Ожидайте ответа!', sitesButton);
         })
             .catch((error) => {
                 console.error('Error sending message:', error);
@@ -921,7 +1082,13 @@ const runBot = async () => {
     });
 
     bot.hears("Задать другой вопрос", (ctx) => {
-        ctx.replyWithMarkdown(`С какой площадкой Вам нужна помошь, ${ctx.message.from.username}`, sitesButton);
+        if (ctx.message.from.username) {
+            ctx.replyWithMarkdown(`С какой площадкой вам нужна помощь, ${ctx.message.from.username}?`, sitesButton);
+        } else if (ctx.message.from.first_name) {
+            ctx.replyWithMarkdown(`С какой площадкой вам нужна помощь, ${ctx.message.from.first_name}?`, sitesButton);
+        } else {
+            ctx.replyWithMarkdown('С какой площадкой вам нужна помощь?', sitesButton)
+        }
     })
 
     bot.hears('Бот помог', (ctx) => {
@@ -939,7 +1106,7 @@ const runBot = async () => {
         let chatId = 797596124;
 
         bot.telegram.sendMessage(chatId, message).then(() => {
-            ctx.reply('С вами в ближайшее время свяжется оператор. Ожидайте ответа!', Markup.removeKeyboard());
+            ctx.replyWithMarkdown('С вами в ближайшее время свяжется оператор. Ожидайте ответа!', sitesButton);
         })
             .catch((error) => {
                 console.error('Error sending message:', error);
