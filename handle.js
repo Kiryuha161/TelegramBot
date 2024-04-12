@@ -6,14 +6,14 @@ const http = require('http');
 
 const bot = new Telegraf('7003796600:AAGb5yvtAOPefwtTArVgVPQMGxKl-G2JzNY');
 
-bot.telegram.setWebhook('https://bot.viomitra.ru/');
+/* bot.telegram.setWebhook('https://bot.viomitra.ru/');
 
 const server = http.createServer(bot.webhookCallback('https://bot.viomitra.ru/'));
 
 server.listen(443, () => {
   console.log('Server is running on port 443');
-});
-
+}); 
+ */
 let messageInfo = "";
 
 const SPECIAL_CHARS = [
