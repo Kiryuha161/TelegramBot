@@ -269,107 +269,127 @@ const runBot = async () => {
 
     //Как я могу зарегистрироваться как самозанятый, фл, юл, ип
     bot.hears(state.dataArt[0].questions[0].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[0].questions[0].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[0].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //регистрация на площадке
     bot.hears(state.dataArt[0].questions[1].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[0].questions[1].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[0].questions[1].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //какая нужна эцп
     bot.hears(state.dataArt[1].questions[0].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[1].questions[0].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[1].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
 
     //какие данные заполнять
     bot.hears(state.dataArt[1].questions[1].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[1].questions[1].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[1].questions[1].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
 
     //получение на почту активации
     bot.hears(state.dataArt[1].questions[2].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[1].questions[2].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[1].questions[2].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Кто осуществляет доставку
     bot.hears(state.dataArt[2].questions[0].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[2].questions[0].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[2].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
 
     //На ком лежит ответственность по доставке
     bot.hears(state.dataArt[2].questions[1].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[2].questions[1].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[2].questions[1].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
 
     //Будет ли страховка по доставке
     bot.hears(state.dataArt[2].questions[2].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[2].questions[2].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[2].questions[2].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
 
     //Доставка самолётом возможна
     bot.hears(state.dataArt[2].questions[3].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[2].questions[3].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[2].questions[3].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Кто будет платить за торги
     bot.hears(state.dataArt[3].questions[0].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[3].questions[0].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[3].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Какой лучше вид аукциона выбрать
     bot.hears(state.dataArt[3].questions[1].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[3].questions[1].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[3].questions[1].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Ювелирка
     bot.hears(state.dataArt[3].questions[2].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[3].questions[2].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[3].questions[2].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Какую цену указывать
     bot.hears(state.dataArt[4].questions[0].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[4].questions[0].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[4].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Может ли цена понизиться
     bot.hears(state.dataArt[4].questions[1].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[4].questions[1].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[4].questions[1].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //какой процент берет митра
     bot.hears(state.dataArt[5].questions[0].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[5].questions[0].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[5].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //какой процент по результатам торгов
     bot.hears(state.dataArt[5].questions[1].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[5].questions[1].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[5].questions[1].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //какая выгода для вас
     bot.hears(state.dataArt[5].questions[2].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[5].questions[2].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[5].questions[2].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //как будет списываться комиссия
     bot.hears(state.dataArt[5].questions[3].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[5].questions[3].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[5].questions[3].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //какой счёт указывать
     bot.hears(state.dataArt[5].questions[4].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[5].questions[4].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[5].questions[4].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //на чей расчётный счёт будет поступать оплата
     bot.hears(state.dataArt[5].questions[5].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[5].questions[5].answer, feedbackButton)
+        ctx.replyWithMarkdown(state.dataArt[5].questions[5].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
 
@@ -405,76 +425,91 @@ const runBot = async () => {
     //возврат задатка
     bot.hears(state.dataRosim[0].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[0].subcategories[0].questions[0].answer.text, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //внесение задатка
     bot.hears(state.dataRosim[0].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[0].subcategories[1].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Срок рассмотрения заявки
     bot.hears(state.dataRosim[2].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[0].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Как посмотреть заявку
     bot.hears(state.dataRosim[2].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRosim(state.dataRosim[2].category, 1).answers, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Как подать заявку
     bot.hears(state.dataRosim[2].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[2].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Кто может подать заявку
     bot.hears(state.dataRosim[2].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[3].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Как отозвать заявку
     bot.hears(state.dataRosim[2].subcategories[4].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[4].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Как отредактировать заявку
     bot.hears(state.dataRosim[2].subcategories[5].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[5].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //При попытке подать заявку регламент
     bot.hears(state.dataRosim[2].subcategories[6].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[6].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //При попытке подать заявку юр действия
     bot.hears(state.dataRosim[2].subcategories[7].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[20].subcategories[7].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //ускорение
     bot.hears(state.dataRosim[2].subcategories[8].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[8].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Как подать заявку регламент
     bot.hears(state.dataRosim[3].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[0].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Время рассмотрения заявки
     bot.hears(state.dataRosim[3].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[1].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Время рассмотрения заявки на присоедниение
     bot.hears(state.dataRosim[3].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[2].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Время рассмотрения на юр действия
     bot.hears(state.dataRosim[3].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[3].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Регистрация на площадке
@@ -484,47 +519,56 @@ const runBot = async () => {
 
     //Какие данные заполнять
     bot.hears(state.dataRosim[3].subcategories[4].questions[0].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[0].answer);
+        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Получлили на почту код
     bot.hears(state.dataRosim[3].subcategories[4].questions[1].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[1].answer);
+        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[1].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Начал регистрацию по этп
     bot.hears(state.dataRosim[3].subcategories[4].questions[2].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[2].answer);
+        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[2].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Какие документы по регистрации необходимы
     bot.hears(state.dataRosim[3].subcategories[4].questions[3].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[3].answer);
+        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[3].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Как начать регистрацию
     bot.hears(state.dataRosim[3].subcategories[4].questions[4].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[4].answer);
+        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[4].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Можно ли подать одновременно заявку
     bot.hears(state.dataRosim[3].subcategories[4].questions[5].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[5].answer);
+        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[5].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Проверка заполненных данных
     bot.hears(state.dataRosim[3].subcategories[4].questions[6].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[6].answer);
+        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[6].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Что делать если не пришло удивление
     bot.hears(state.dataRosim[3].subcategories[5].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[5].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Руководство по регистрации
     bot.hears(state.dataRosim[3].subcategories[6].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[6].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Поступил отказ
@@ -535,51 +579,61 @@ const runBot = async () => {
     //Как повторно подать заявку
     bot.hears(state.dataRosim[3].subcategories[7].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[7].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Необходимо ли после отказа
     bot.hears(state.dataRosim[3].subcategories[7].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[7].questions[1].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Если в отказе указано что вы не правильно указали данные
     bot.hears(state.dataRosim[3].subcategories[7].questions[2].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[7].questions[2].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Не видите причину отказа 
     bot.hears(state.dataRosim[3].subcategories[7].questions[3].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[7].questions[3].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Отозвать заявку
     bot.hears(state.dataRosim[3].subcategories[8].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[8].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Ускорение регистрации
     bot.hears(state.dataRosim[3].subcategories[9].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[9].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Срок действия регистрации
     bot.hears(state.dataRosim[3].subcategories[10].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[10].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //какой браузер
     bot.hears(state.dataRosim[4].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[4].subcategories[0].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //забыл пароль
     bot.hears(state.dataRosim[4].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[4].subcategories[1].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //срок действия регистрации эцп
     bot.hears(state.dataRosim[4].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[4].subcategories[2].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Какая эцп нужна
@@ -590,41 +644,49 @@ const runBot = async () => {
     //эцп для фл
     bot.hears(state.dataRosim[5].subcategories[0].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[0].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //эцп для юл
     bot.hears(state.dataRosim[5].subcategories[0].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[0].questions[1].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Не получается подписать
     bot.hears(state.dataRosim[5].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[1].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Как поменять сертификат
     bot.hears(state.dataRosim[5].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[2].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Предоставление информации
     bot.hears(state.dataRosim[6].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[0].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Контакты организатора
     bot.hears(state.dataRosim[6].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[1].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Как найти торг
     bot.hears(state.dataRosim[6].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[2].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Как и когда подать заявку на участие
     bot.hears(state.dataRosim[6].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[3].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //БАНКРОТСТВО
@@ -635,6 +697,7 @@ const runBot = async () => {
     //Контакты
     bot.hears(String(state.dataBankrot[1].category), (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[1].subcategories[0].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     bot.hears(String(state.dataBankrot[2].category), (ctx) => {
@@ -672,136 +735,163 @@ const runBot = async () => {
 
         ctx.replyWithMarkdown(text, feedbackButton); */
         ctx.replyWithMarkdown(state.dataBankrot[0].subcategories[0].questions[0].answer.text, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Задаток на иной лс
     bot.hears(state.dataBankrot[0].subcategories[0].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[0].subcategories[0].questions[1].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Срок рассмотрения задаток
     bot.hears(state.dataBankrot[0].subcategories[0].questions[2].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[0].subcategories[0].questions[2].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Внесение задатка
     bot.hears(state.dataBankrot[0].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[0].subcategories[1].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Срок рассмотрения заявки
     bot.hears(state.dataBankrot[2].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[0].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Посмотреть заявку
     bot.hears(state.dataBankrot[2].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[1].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //подать заявкку
     bot.hears(state.dataBankrot[2].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[2].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //кто может подать зявку
     bot.hears(state.dataBankrot[2].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[3].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //отзовать заявкиу
     bot.hears(state.dataBankrot[2].subcategories[4].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[4].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //отредаткировать зявкуи
     bot.hears(state.dataBankrot[2].subcategories[5].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[5].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //при попытке подать звяфу... 1
     bot.hears(state.dataBankrot[2].subcategories[6].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[6].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //при попыдутку подать заявкуу... 2
     bot.hears(state.dataBankrot[2].subcategories[7].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[7].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //ускорение завявку
     bot.hears(state.dataBankrot[2].subcategories[8].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[8].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //как подать заявку на присоедтнение
     bot.hears(state.dataBankrot[3].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[0].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //время рассмотрения
     bot.hears(state.dataBankrot[3].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[1].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //время рассмотрения регламент
     bot.hears(state.dataBankrot[3].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[2].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //время рассмотрения юр действия
     bot.hears(state.dataBankrot[3].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[3].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //регисьрация
     bot.hears(state.dataBankrot[3].subcategories[4].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[4].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //не пришло уведомление
     bot.hears(state.dataBankrot[3].subcategories[5].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[5].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //руководство по регистрации
     bot.hears(state.dataBankrot[3].subcategories[6].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[6].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //поступил октаз
     bot.hears(state.dataBankrot[3].subcategories[7].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[7].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //отозвать заявку
     bot.hears(state.dataBankrot[3].subcategories[8].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[8].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //ускорение регистрации
     bot.hears(state.dataBankrot[3].subcategories[9].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[9].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //срок действия регистрации
     bot.hears(state.dataBankrot[3].subcategories[10].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[10].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Какой браузер
     bot.hears(state.dataBankrot[4].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[4].subcategories[0].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Забыл пароль
     bot.hears(state.dataBankrot[4].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[4].subcategories[1].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Срок дейстивя регистрации эцп
     bot.hears(state.dataBankrot[4].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[4].subcategories[2].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Какая эцп нужна
@@ -812,26 +902,31 @@ const runBot = async () => {
     //эцп ждя фл
     bot.hears(state.dataBankrot[5].subcategories[0].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[0].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //эцп для юр л
     bot.hears(state.dataBankrot[5].subcategories[0].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[0].questions[1].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //не получается подписать
     bot.hears(state.dataBankrot[5].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[1].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //как поменять сертификат
     bot.hears(state.dataBankrot[5].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[2].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Предоставление инфы
     bot.hears(state.dataBankrot[6].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[0].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Контакты организатора
@@ -844,26 +939,31 @@ const runBot = async () => {
         }
 
         ctx.replyWithMarkdown(text, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //Поиск публичка
     bot.hears(state.dataBankrot[6].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[2].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //поиск аукцион
     bot.hears(state.dataBankrot[6].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[3].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //поиск торгов
     bot.hears(state.dataBankrot[6].subcategories[4].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[4].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
     //как и когда подать заявку на участие
     bot.hears(state.dataBankrot[6].subcategories[5].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[5].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     })
 
 
@@ -903,16 +1003,19 @@ const runBot = async () => {
     //Как зарегистрироваться
     bot.hears(state.data[0].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[0].category, 0).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Что такое псевдоним
     bot.hears(state.data[0].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[0].category, 1).answers[0]), feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Как купить
     bot.hears(state.data[1].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[1].category, 0).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Обсуждение лота до покупки
@@ -923,21 +1026,25 @@ const runBot = async () => {
     //Поиски и фильтры 
     bot.hears(state.data[1].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[1].category, 2).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Прохождение торгов
     bot.hears(state.data[1].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[1].category, 3).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Избранные лоты
     bot.hears(state.data[2].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[2].category, 0).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Чёрный список продавцов
     bot.hears(state.data[2].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[2].category, 1).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Как продавать
@@ -947,7 +1054,8 @@ const runBot = async () => {
 
     //Как продать
     bot.hears(state.data[3].subcategories[0].questions[0].question, (ctx) => {
-        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[3].category, 0).answers[0], feedbackButton)
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[3].category, 0).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Как создать лот
@@ -956,6 +1064,7 @@ const runBot = async () => {
         const parts = message.split('3');
         ctx.reply(parts[0]);
         ctx.replyWithMarkdown(parts[1], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Услуги агента
@@ -981,91 +1090,109 @@ const runBot = async () => {
     //Теги-инструменты
     bot.hears(state.data[3].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdownV2(getQuestionsAndAnswersRealty(state.data[3].category, 1).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Режим отпуск
     bot.hears(state.data[3].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[3].category, 2).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Инструкция заполнения лота
     bot.hears(state.data[3].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[3].category, 3).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Чёрный список покупателей
     bot.hears(state.data[4].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[4].category, 0).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Ограничение по рейтингу покупателей
     bot.hears(state.data[4].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[4].category, 1).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Антиснайпер
     bot.hears(state.data[4].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[4].category, 2).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Замена пароля
     bot.hears(state.data[5].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 0).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Роль емайла
     bot.hears(state.data[5].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 1).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Восстановление доступа
     bot.hears(state.data[5].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 2).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Проблема с авторизацией
     bot.hears(state.data[5].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 3).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Аватарка пользователя
     bot.hears(state.data[5].subcategories[4].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 4).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Активность
     bot.hears(state.data[5].subcategories[5].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 5).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Уведомление
     bot.hears(state.data[5].subcategories[6].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 6).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Какой браузер
     bot.hears(state.data[5].subcategories[7].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 7).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Что такое отзыв
     bot.hears(state.data[6].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[6].category, 0).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Что должен содержать отзыв
     bot.hears(state.data[6].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[6].category, 1).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Как оставить отзыв
     bot.hears(state.data[6].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[6].category, 2).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //тарифы
     bot.hears(state.data[7].category, (ctx) => {
         ctx.replyWithMarkdown(state.data[7].subcategories[0].questions[0].answer["hyperlink"], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Какая эцп
@@ -1076,21 +1203,25 @@ const runBot = async () => {
     //ЭЦП для фл
     bot.hears(state.data[8].subcategories[0].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[8].category, 0).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //ЭЦП для юл и ип
     bot.hears(state.data[8].subcategories[0].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[8].category, 0).answers[1], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Не получается подписать
     bot.hears(state.data[8].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[8].category, 1).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     //Как поменять сертификат
     bot.hears(state.data[8].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[8].category, 2).answers[0], feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     bot.hears("Задать другой вопрос", (ctx) => {
