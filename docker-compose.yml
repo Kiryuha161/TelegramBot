@@ -1,7 +1,11 @@
 version: '3'
 services:
   telegram-bot:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nodejs
+    restart: unless-stopped
     container_name: telegram-bot
     ports:
       - "3000:3000"
