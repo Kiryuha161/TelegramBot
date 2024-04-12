@@ -4,8 +4,8 @@ let state = require('./variables.js').state;
 let handleData = require('./variables.js').handleData;
 const http = require('http');
 
-//const bot = new Telegraf('6366545078:AAFZjWTJXL4RQ3rG6yvesEj-X0CciRb1JoU');
-const bot = new Telegraf('7003796600:AAGb5yvtAOPefwtTArVgVPQMGxKl-G2JzNY');
+const bot = new Telegraf('6366545078:AAFZjWTJXL4RQ3rG6yvesEj-X0CciRb1JoU');
+//const bot = new Telegraf('7003796600:AAGb5yvtAOPefwtTArVgVPQMGxKl-G2JzNY');
 
 /* bot.telegram.setWebhook('https://bot.viomitra.ru/');
 
@@ -159,7 +159,7 @@ const feedbackButton = Markup.keyboard([
 
 const runBot = async () => {
     await handleData();
-    console.log(state.dataArt);
+    console.log(state.data);
 
     let sitesButton = Markup.keyboard(state.sites.map(site => Markup.button.callback(site)));
     const uniqueRealtyCategories = new Set(state.data.map(category => category.category));
@@ -255,7 +255,7 @@ const runBot = async () => {
         ctx.replyWithMarkdown("Вы выбрали доставка. Выберите вопрос.", Markup.keyboard(getQuestionsAndAnswersArt(state.dataArt[2].category).questions))
     })
 
-    bot.hears(String(state.dataArt[3].category), (ctx) => {
+    bot.hears(String(state.dataArt[3].category), (ctx) => { //Не работает почему-то
         ctx.replyWithMarkdown("Вы выбрали размещение объявления. Выберите вопрос.", Markup.keyboard(getQuestionsAndAnswersArt(state.dataArt[3].category).questions))
     })
 
@@ -356,7 +356,7 @@ const runBot = async () => {
         messageInfo = ctx.message.text;
     })
 
-    //какой процент берет митра
+    //какой процент берет митра. Не работает почему-то
     bot.hears(state.dataArt[5].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[5].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
@@ -388,7 +388,15 @@ const runBot = async () => {
 
     //на чей расчётный счёт будет поступать оплата
     bot.hears(state.dataArt[5].questions[5].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[5].questions[5].answer, feedbackButton);
+        //ctx.replyWithMarkdown(state.dataArt[5].questions[5].answer, feedbackButton);
+        const answer = state.dataArt[5].questions[5].answer;
+
+        let text = '';
+        for (const element of answer.richText) {
+            text += element.text;
+        }
+
+        ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
     })
 
@@ -400,6 +408,7 @@ const runBot = async () => {
 
     bot.hears(String(state.dataRosim[1].category), (ctx) => {
         ctx.replyWithMarkdown(state.dataRosim[0].subcategories[0].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
     });
 
     bot.hears(String(state.dataRosim[2].category), (ctx) => {
@@ -466,7 +475,15 @@ const runBot = async () => {
 
     //Как отредактировать заявку
     bot.hears(state.dataRosim[2].subcategories[5].name, (ctx) => {
-        ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[5].questions[0].answer, feedbackButton);
+        //ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[5].questions[0].answer, feedbackButton);
+        const answer = state.dataRosim[2].subcategories[5].questions[0].answer;
+
+        let text = '';
+        for (const element of answer.richText) {
+            text += element.text;
+        }
+
+        ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
     });
 
@@ -478,7 +495,7 @@ const runBot = async () => {
 
     //При попытке подать заявку юр действия
     bot.hears(state.dataRosim[2].subcategories[7].name, (ctx) => {
-        ctx.replyWithMarkdown(state.dataBankrot[20].subcategories[7].questions[0].answer, feedbackButton);
+        ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[7].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
     });
 
@@ -537,7 +554,15 @@ const runBot = async () => {
 
     //Какие документы по регистрации необходимы
     bot.hears(state.dataRosim[3].subcategories[4].questions[3].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[3].answer, feedbackButton);
+        //ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[3].answer, feedbackButton);
+        const answer = state.dataBankrot[3].subcategories[4].questions[3].answer;
+
+        let text = '';
+        for (const element of answer.richText) {
+            text += element.text;
+        }
+
+        ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
     })
 
@@ -608,7 +633,15 @@ const runBot = async () => {
 
     //Ускорение регистрации
     bot.hears(state.dataRosim[3].subcategories[9].name, (ctx) => {
-        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[9].questions[0].answer, feedbackButton);
+        //ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[9].questions[0].answer, feedbackButton);
+        const answer = state.dataBankrot[3].subcategories[9].questions[0].answer;
+
+        let text = '';
+        for (const element of answer.richText) {
+            text += element.text;
+        }
+
+        ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
     });
 
@@ -661,7 +694,15 @@ const runBot = async () => {
 
     //Как поменять сертификат
     bot.hears(state.dataRosim[5].subcategories[2].name, (ctx) => {
-        ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[2].questions[0].answer, feedbackButton);
+        //ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[2].questions[0].answer, feedbackButton);
+        const answer = state.dataBankrot[5].subcategories[2].questions[0].answer;
+
+        let text = '';
+        for (const element of answer.richText) {
+            text += element.text;
+        }
+
+        ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
     });
 
@@ -774,43 +815,51 @@ const runBot = async () => {
         messageInfo = ctx.message.text;
     })
 
-    //кто может подать зявку
+    //кто может подать заявку
     bot.hears(state.dataBankrot[2].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[3].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
     })
 
-    //отзовать заявкиу
+    //отзовать заявку
     bot.hears(state.dataBankrot[2].subcategories[4].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[4].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
     })
 
-    //отредаткировать зявкуи
+    //отредактировать заявку
     bot.hears(state.dataBankrot[2].subcategories[5].name, (ctx) => {
-        ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[5].questions[0].answer, feedbackButton);
+        //ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[5].questions[0].answer, feedbackButton);
+        const answer = state.dataBankrot[2].subcategories[5].questions[0].answer;
+
+        let text = '';
+        for (const element of answer.richText) {
+            text += element.text;
+        }
+
+        ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
     })
 
-    //при попытке подать звяфу... 1
+    //при попытке подать заявку... 1
     bot.hears(state.dataBankrot[2].subcategories[6].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[6].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
     })
 
-    //при попыдутку подать заявкуу... 2
+    //при попытке подать заявку... 2
     bot.hears(state.dataBankrot[2].subcategories[7].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[7].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
     })
 
-    //ускорение завявку
+    //ускорение заявки
     bot.hears(state.dataBankrot[2].subcategories[8].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[8].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
     })
 
-    //как подать заявку на присоедтнение
+    //как подать заявку на присоединение
     bot.hears(state.dataBankrot[3].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[0].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
@@ -822,7 +871,7 @@ const runBot = async () => {
         messageInfo = ctx.message.text;
     })
 
-    //время рассмотрения регламент
+    //время рассмотрения регламента
     bot.hears(state.dataBankrot[3].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[2].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
@@ -834,11 +883,68 @@ const runBot = async () => {
         messageInfo = ctx.message.text;
     })
 
-    //регисьрация
+    //регистрация
     bot.hears(state.dataBankrot[3].subcategories[4].name, (ctx) => {
+        //ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[4].questions[0].answer, feedbackButton);
+        ctx.replyWithMarkdown("Вы выбрали регистрация на площадке. Выберите вопрос.", Markup.keyboard(getQuestionsAndAnswersBankrot(state.dataBankrot[3].category, 4).questions).resize());
+        messageInfo = ctx.message.text;
+    })
+
+    //Какие данные заполнять физ лицу
+    bot.hears(state.dataBankrot[3].subcategories[4].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[4].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
     })
+
+
+    //Получили на почту код активации
+    bot.hears(state.dataBankrot[3].subcategories[4].questions[1].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[4].questions[1].answer, feedbackButton);
+        messageInfo = ctx.message.text;
+    })
+
+
+    //Начал регистрацию на этп. Костыль. Жёстко забито, потому что текст не помещается в кнопку. 
+    bot.hears("Начал регистрацию на ЭТП. На первом шаге заполнил данные, затем на почту пришло уведомление об активации временного кода, я по нему…", (ctx) => { 
+        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[4].questions[2].answer, feedbackButton);
+        messageInfo = ctx.message.text;
+    })
+
+    //какие документы для регистрации
+    bot.hears(state.dataBankrot[3].subcategories[4].questions[3].question, (ctx) => {
+        //ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[4].questions[3].answer, feedbackButton);
+        const answer = state.dataBankrot[3].subcategories[4].questions[3].answer;
+
+        let text = '';
+        for (const element of answer.richText) {
+            text += element.text;
+        }
+
+        ctx.replyWithMarkdown(text, feedbackButton);
+        messageInfo = ctx.message.text;
+    })
+
+
+    //как начать регистрацию
+    bot.hears(state.dataBankrot[3].subcategories[4].questions[4].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[4].questions[4].answer, feedbackButton);
+        messageInfo = ctx.message.text;
+    })
+
+
+    //можно ли подать одновременно заявку
+    bot.hears(state.dataBankrot[3].subcategories[4].questions[5].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[4].questions[5].answer, feedbackButton);
+        messageInfo = ctx.message.text;
+    })
+
+
+    //проверка заполненных данных
+    bot.hears(state.dataBankrot[3].subcategories[4].questions[6].question, (ctx) => {
+        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[4].questions[6].answer, feedbackButton);
+        messageInfo = ctx.message.text;
+    })
+
 
     //не пришло уведомление
     bot.hears(state.dataBankrot[3].subcategories[5].name, (ctx) => {
@@ -852,7 +958,7 @@ const runBot = async () => {
         messageInfo = ctx.message.text;
     })
 
-    //поступил октаз
+    //поступил отказ
     bot.hears(state.dataBankrot[3].subcategories[7].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[7].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
@@ -866,7 +972,15 @@ const runBot = async () => {
 
     //ускорение регистрации
     bot.hears(state.dataBankrot[3].subcategories[9].name, (ctx) => {
-        ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[9].questions[0].answer, feedbackButton);
+        //ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[9].questions[0].answer, feedbackButton);
+        const answer = state.dataBankrot[3].subcategories[9].questions[0].answer;
+
+        let text = '';
+        for (const element of answer.richText) {
+            text += element.text;
+        }
+
+        ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
     })
 
@@ -899,7 +1013,7 @@ const runBot = async () => {
         ctx.replyWithMarkdown("Вы выбрали какая ЭЦП нужна. Выберите вопрос", Markup.keyboard(getQuestionsAndAnswersBankrot(state.dataBankrot[5].category, 0).questions));
     })
 
-    //эцп ждя фл
+    //эцп для фл
     bot.hears(state.dataBankrot[5].subcategories[0].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[0].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
@@ -919,7 +1033,15 @@ const runBot = async () => {
 
     //как поменять сертификат
     bot.hears(state.dataBankrot[5].subcategories[2].name, (ctx) => {
-        ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[2].questions[0].answer, feedbackButton);
+        //ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[2].questions[0].answer, feedbackButton);
+        const answer = state.dataBankrot[5].subcategories[2].questions[0].answer;
+
+        let text = '';
+        for (const element of answer.richText) {
+            text += element.text;
+        }
+
+        ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
     })
 
@@ -931,14 +1053,15 @@ const runBot = async () => {
 
     //Контакты организатора
     bot.hears(state.dataBankrot[6].subcategories[1].name, (ctx) => {
-        const answer = state.dataBankrot[6].subcategories[1].questions[0].answer;
+        ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[1].questions[0].answer, feedbackButton);
+        /* const answer = state.dataBankrot[6].subcategories[1].questions[0].answer;
 
         let text = '';
         for (const element of answer.richText) {
             text += element.text;
         }
 
-        ctx.replyWithMarkdown(text, feedbackButton);
+        ctx.replyWithMarkdown(text, feedbackButton); */
         messageInfo = ctx.message.text;
     })
 
@@ -1020,8 +1143,21 @@ const runBot = async () => {
 
     //Обсуждение лота до покупки
     bot.hears(state.data[1].subcategories[1].name, (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали обсуждение лота до покупки. Выберите вопрос.", Markup.keyboard(getQuestionsAndAnswers(state.data[1].category, 1).questions));
+        ctx.replyWithMarkdown("Вы выбрали обсуждение лота до покупки. Выберите вопрос.", Markup.keyboard(getQuestionsAndAnswersRealty(state.data[1].category, 1).questions));
     });
+
+    //обсуждение лота
+    bot.hears(state.data[1].subcategories[1].questions[0].question, (ctx) => {
+        ctx.replyWithMarkdown(state.data[1].subcategories[1].questions[0].answer, feedbackButton);
+        messageInfo = ctx.message.text;
+    })
+
+    //ответ на сообщение
+    bot.hears(state.data[1].subcategories[1].questions[1].question, (ctx) => {
+        ctx.replyWithMarkdown(state.data[1].subcategories[1].questions[1].answer, feedbackButton);
+        messageInfo = ctx.message.text;
+    })
+
 
     //Поиски и фильтры 
     bot.hears(state.data[1].subcategories[2].name, (ctx) => {
@@ -1052,15 +1188,16 @@ const runBot = async () => {
         ctx.replyWithMarkdown("Вы выбрали как продавать. Выберите вопрос.", Markup.keyboard(getQuestionsAndAnswersRealty(state.data[3].category, 0).questions));
     });
 
-    //Как продать
+    //Как продать. Почему то то не отвечает на вопрос.
     bot.hears(state.data[3].subcategories[0].questions[0].question, (ctx) => {
-        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[3].category, 0).answers[0], feedbackButton);
+        ctx.replyWithMarkdown(state.data[3].subcategories[0].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
     });
 
+
     //Как создать лот
     bot.hears(state.data[3].subcategories[0].questions[1].question, (ctx) => {
-        let message = getQuestionsAndAnswersRealty(state.data[3].category, 0).answers[1];
+        let message = state.data[3].subcategories[0].questions[1].answer;
         const parts = message.split('3');
         ctx.reply(parts[0]);
         ctx.replyWithMarkdown(parts[1], feedbackButton);
@@ -1089,7 +1226,7 @@ const runBot = async () => {
 
     //Теги-инструменты
     bot.hears(state.data[3].subcategories[1].name, (ctx) => {
-        ctx.replyWithMarkdownV2(getQuestionsAndAnswersRealty(state.data[3].category, 1).answers[0], feedbackButton);
+        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[3].category, 1).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
     });
 
@@ -1220,7 +1357,15 @@ const runBot = async () => {
 
     //Как поменять сертификат
     bot.hears(state.data[8].subcategories[2].name, (ctx) => {
-        ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[8].category, 2).answers[0], feedbackButton);
+        //ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[8].category, 2).answers[0], feedbackButton);
+        const answer = state.data[8].subcategories[2].questions[0].answer;
+
+        let text = '';
+        for (const element of answer.richText) {
+            text += element.text;
+        }
+
+        ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
     });
 
