@@ -4,6 +4,7 @@ let state = require('./variables.js').state;
 let handleData = require('./variables.js').handleData;
 const http = require('http');
 
+//const bot = new Telegraf('6366545078:AAFZjWTJXL4RQ3rG6yvesEj-X0CciRb1JoU');
 const bot = new Telegraf('7003796600:AAGb5yvtAOPefwtTArVgVPQMGxKl-G2JzNY');
 
 /* bot.telegram.setWebhook('https://bot.viomitra.ru/');
@@ -664,12 +665,13 @@ const runBot = async () => {
     bot.hears(state.dataBankrot[0].subcategories[0].questions[0].question, (ctx) => {
         const answer = state.dataBankrot[0].subcategories[0].questions[0].answer;
 
-        let text = '';
+        /* let text = '';
         for (const element of answer.text.richText) {
             text += element.text;
         }
 
-        ctx.replyWithMarkdown(text, feedbackButton);
+        ctx.replyWithMarkdown(text, feedbackButton); */
+        ctx.replyWithMarkdown(state.dataBankrot[0].subcategories[0].questions[0].answer.text, feedbackButton);
     });
 
     //Задаток на иной лс
