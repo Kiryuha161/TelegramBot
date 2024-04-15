@@ -255,7 +255,7 @@ const runBot = async () => {
         ctx.replyWithMarkdown("Вы выбрали доставка. Выберите вопрос.", Markup.keyboard(getQuestionsAndAnswersArt(state.dataArt[2].category).questions))
     })
 
-    bot.hears(String(state.dataArt[3].category), (ctx) => { //Не работает почему-то
+    bot.hears(String(state.dataArt[3].category), (ctx) => {
         ctx.replyWithMarkdown("Вы выбрали размещение объявления. Выберите вопрос.", Markup.keyboard(getQuestionsAndAnswersArt(state.dataArt[3].category).questions))
     })
 
@@ -328,7 +328,7 @@ const runBot = async () => {
 
     //Кто будет платить за торги
     bot.hears(state.dataArt[3].questions[0].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataArt[3].questions[0].answer, feedbackButton);
+        ctx.replyWithMarkdown(state.dataArt[3].questions[0].answer.text, feedbackButton);
         messageInfo = ctx.message.text;
     })
 
@@ -1188,7 +1188,7 @@ const runBot = async () => {
         ctx.replyWithMarkdown("Вы выбрали как продавать. Выберите вопрос.", Markup.keyboard(getQuestionsAndAnswersRealty(state.data[3].category, 0).questions));
     });
 
-    //Как продать. Почему то то не отвечает на вопрос.
+    //Как продать. 
     bot.hears(state.data[3].subcategories[0].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.data[3].subcategories[0].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
