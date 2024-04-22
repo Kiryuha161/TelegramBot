@@ -2,44 +2,31 @@ const { Telegraf } = require('telegraf');
 const Markup = require('telegraf/markup');
 let state = require('./variables.js').state;
 let handleData = require('./variables.js').handleData;
-const http = require('http');
+let logger = require('./logger.js');
 
 //const bot = new Telegraf('6366545078:AAFZjWTJXL4RQ3rG6yvesEj-X0CciRb1JoU');
 const bot = new Telegraf('7003796600:AAGb5yvtAOPefwtTArVgVPQMGxKl-G2JzNY');
 
-/* bot.telegram.setWebhook('https://bot.viomitra.ru/');
-
-const server = http.createServer(bot.webhookCallback('https://bot.viomitra.ru/'));
-
-server.listen(443, () => {
-  console.log('Server is running on port 443');
-}); 
- */
 let messageInfo = "";
+let totalLotid = "";
+let totalSite = "";
 
 const SPECIAL_CHARS = [
-    //'\\',
     '_',
     '*',
     '[',
     ']',
-    //'(',
-    //')',
     '~',
     '`',
-    //'>',
-    //'<',
     '&',
     '#',
     '+',
-    //'-',
     '=',
     '|',
     '{',
     '}',
     '.',
     '!',
-    //'-',
     '\''
 ]
 
@@ -216,26 +203,61 @@ const runBot = async () => {
     let rosimSubcategoriesTradeButtons = getRosimSubcategoriesButtons(String(state.dataRosim[6].category));
 
     bot.start((ctx) => {
-        if (ctx.message.from.username) {
-            ctx.replyWithMarkdown(`Привет, ${ctx.message.from.username}! С какой площадкой вам нужна помощь?`, sitesButton);
-        } else if (ctx.message.from.first_name) {
-            ctx.replyWithMarkdown(`Привет, ${ctx.message.from.first_name}! С какой площадкой вам нужна помощь?`, sitesButton);
-        } else {
-            ctx.replyWithMarkdown('Привет! С какой площадкой вам нужна помощь?', sitesButton)
+        let message = ctx.message.text;
+        let lotId = ctx.message.text.split('_');
+        let underscoreIndex = message.indexOf('_');
+        let site = message.substring(message.indexOf(' ') + 1, underscoreIndex);
+        try {
+            if (message === "/start") {
+                if (ctx.message.from.username) {
+                    ctx.replyWithMarkdown(`Привет, ${ctx.message.from.username}! С какой площадкой вам нужна помощь?`, sitesButton);
+                } else if (ctx.message.from.first_name) {
+                    ctx.replyWithMarkdown(`Привет, ${ctx.message.from.first_name}!  С какой площадкой вам нужна помощь?`, sitesButton);
+                } else {
+                    ctx.replyWithMarkdown('Привет! С какой площадкой вам нужна помощь?', sitesButton);
+                }
+            } else if (message.includes("bankrot")) {
+                ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Банкротство. Выберите категорию вопроса.", bankrotCategoriesButton);
+            } else if (message.includes("realty")) {
+                ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Коммерческие торги. Выберите категорию вопроса.", realtyCategoriesButton);
+            } else if (message.includes("rosim")) {
+                ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Росимущество. Выберите категорию вопроса.", rosimCategoriesButton);
+            } else if (message.includes("art")) {
+                ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Арт. Выберите категорию вопроса", artCategoriesButton);
+            }
+            logger.infoLogger(
+                `Пользователь перешёл в телеграм-бот`,
+                `${message}`,
+                `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+                `${lotId ? lotId[lotId.length - 1] : ''}`,
+                `${site ? site : ''}`,
+                ''
+            )
+
+            if (lotId) {
+                totalLotid = lotId[lotId.length - 1];
+            } 
+
+            if (site) {
+                totalSite = site;
+            }
+
+        } catch {
+            logger.errorLogger("Ошибка", `/start ${message}`)
         }
-    })
+    });
 
     //ВЫБОР САЙТОВ
     bot.hears(String(state.sites[0]), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Банкротство", bankrotCategoriesButton);
+        ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Банкротство. Выберите категорию вопроса.", bankrotCategoriesButton);
     })
 
     bot.hears(String(state.sites[1]), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Коммерческие торги", realtyCategoriesButton);
+        ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Коммерческие торги. Выберите категорию вопроса.", realtyCategoriesButton);
     })
 
     bot.hears(String(state.sites[2]), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Росимущество", rosimCategoriesButton);
+        ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Росимущество. Выберите категорию вопроса.", rosimCategoriesButton);
     })
 
     bot.hears(String(state.sites[3]), (ctx) => {
@@ -271,18 +293,42 @@ const runBot = async () => {
     bot.hears(state.dataArt[0].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[0].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //регистрация на площадке
     bot.hears(state.dataArt[0].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[0].questions[1].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //какая нужна эцп
     bot.hears(state.dataArt[1].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[1].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
 
@@ -290,6 +336,14 @@ const runBot = async () => {
     bot.hears(state.dataArt[1].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[1].questions[1].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
 
@@ -297,12 +351,28 @@ const runBot = async () => {
     bot.hears(state.dataArt[1].questions[2].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[1].questions[2].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Кто осуществляет доставку
     bot.hears(state.dataArt[2].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[2].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
 
@@ -310,6 +380,14 @@ const runBot = async () => {
     bot.hears(state.dataArt[2].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[2].questions[1].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
 
@@ -317,6 +395,14 @@ const runBot = async () => {
     bot.hears(state.dataArt[2].questions[2].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[2].questions[2].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
 
@@ -324,71 +410,158 @@ const runBot = async () => {
     bot.hears(state.dataArt[2].questions[3].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[2].questions[3].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Кто будет платить за торги
     bot.hears(state.dataArt[3].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[3].questions[0].answer.text, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Какой лучше вид аукциона выбрать
     bot.hears(state.dataArt[3].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[3].questions[1].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Ювелирка
     bot.hears(state.dataArt[3].questions[2].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[3].questions[2].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Какую цену указывать
     bot.hears(state.dataArt[4].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[4].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Может ли цена понизиться
     bot.hears(state.dataArt[4].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[4].questions[1].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //какой процент берет митра. Не работает почему-то
     bot.hears(state.dataArt[5].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[5].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //какой процент по результатам торгов
     bot.hears(state.dataArt[5].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[5].questions[1].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //какая выгода для вас
     bot.hears(state.dataArt[5].questions[2].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[5].questions[2].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //как будет списываться комиссия
     bot.hears(state.dataArt[5].questions[3].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[5].questions[3].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //какой счёт указывать
     bot.hears(state.dataArt[5].questions[4].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataArt[5].questions[4].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //на чей расчётный счёт будет поступать оплата
     bot.hears(state.dataArt[5].questions[5].question, (ctx) => {
-        //ctx.replyWithMarkdown(state.dataArt[5].questions[5].answer, feedbackButton);
         const answer = state.dataArt[5].questions[5].answer;
 
         let text = '';
@@ -398,6 +571,14 @@ const runBot = async () => {
 
         ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
 
@@ -435,47 +616,102 @@ const runBot = async () => {
     bot.hears(state.dataRosim[0].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[0].subcategories[0].questions[0].answer.text, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //внесение задатка
     bot.hears(state.dataRosim[0].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[0].subcategories[1].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Срок рассмотрения заявки
     bot.hears(state.dataRosim[2].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[0].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Как посмотреть заявку
     bot.hears(state.dataRosim[2].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRosim(state.dataRosim[2].category, 1).answers, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Как подать заявку
     bot.hears(state.dataRosim[2].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[2].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Кто может подать заявку
     bot.hears(state.dataRosim[2].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[3].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Как отозвать заявку
     bot.hears(state.dataRosim[2].subcategories[4].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[4].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Как отредактировать заявку
     bot.hears(state.dataRosim[2].subcategories[5].name, (ctx) => {
-        //ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[5].questions[0].answer, feedbackButton);
         const answer = state.dataRosim[2].subcategories[5].questions[0].answer;
 
         let text = '';
@@ -485,48 +721,112 @@ const runBot = async () => {
 
         ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //При попытке подать заявку регламент
     bot.hears(state.dataRosim[2].subcategories[6].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[6].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //При попытке подать заявку юр действия
     bot.hears(state.dataRosim[2].subcategories[7].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[7].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //ускорение
     bot.hears(state.dataRosim[2].subcategories[8].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[8].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Как подать заявку регламент
     bot.hears(state.dataRosim[3].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[0].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Время рассмотрения заявки
     bot.hears(state.dataRosim[3].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[1].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Время рассмотрения заявки на присоедниение
     bot.hears(state.dataRosim[3].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[2].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Время рассмотрения на юр действия
     bot.hears(state.dataRosim[3].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[3].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Регистрация на площадке
@@ -538,23 +838,46 @@ const runBot = async () => {
     bot.hears(state.dataRosim[3].subcategories[4].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Получлили на почту код
     bot.hears(state.dataRosim[3].subcategories[4].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[1].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Начал регистрацию по этп
     bot.hears(state.dataRosim[3].subcategories[4].questions[2].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[2].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Какие документы по регистрации необходимы
     bot.hears(state.dataRosim[3].subcategories[4].questions[3].question, (ctx) => {
-        //ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[3].answer, feedbackButton);
         const answer = state.dataBankrot[3].subcategories[4].questions[3].answer;
 
         let text = '';
@@ -564,36 +887,84 @@ const runBot = async () => {
 
         ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Как начать регистрацию
     bot.hears(state.dataRosim[3].subcategories[4].questions[4].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[4].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Можно ли подать одновременно заявку
     bot.hears(state.dataRosim[3].subcategories[4].questions[5].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[5].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Проверка заполненных данных
     bot.hears(state.dataRosim[3].subcategories[4].questions[6].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataRosim[3].subcategories[4].questions[6].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Что делать если не пришло удивление
     bot.hears(state.dataRosim[3].subcategories[5].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[5].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Руководство по регистрации
     bot.hears(state.dataRosim[3].subcategories[6].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[6].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Поступил отказ
@@ -604,6 +975,14 @@ const runBot = async () => {
     //Как повторно подать заявку
     bot.hears(state.dataRosim[3].subcategories[7].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[7].questions[0].answer, feedbackButton);
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
         messageInfo = ctx.message.text;
     });
 
@@ -611,29 +990,60 @@ const runBot = async () => {
     bot.hears(state.dataRosim[3].subcategories[7].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[7].questions[1].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Если в отказе указано что вы не правильно указали данные
     bot.hears(state.dataRosim[3].subcategories[7].questions[2].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[7].questions[2].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Не видите причину отказа 
     bot.hears(state.dataRosim[3].subcategories[7].questions[3].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[7].questions[3].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Отозвать заявку
     bot.hears(state.dataRosim[3].subcategories[8].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[8].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Ускорение регистрации
     bot.hears(state.dataRosim[3].subcategories[9].name, (ctx) => {
-        //ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[9].questions[0].answer, feedbackButton);
         const answer = state.dataBankrot[3].subcategories[9].questions[0].answer;
 
         let text = '';
@@ -643,30 +1053,70 @@ const runBot = async () => {
 
         ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Срок действия регистрации
     bot.hears(state.dataRosim[3].subcategories[10].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[10].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //какой браузер
     bot.hears(state.dataRosim[4].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[4].subcategories[0].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //забыл пароль
     bot.hears(state.dataRosim[4].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[4].subcategories[1].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //срок действия регистрации эцп
     bot.hears(state.dataRosim[4].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[4].subcategories[2].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Какая эцп нужна
@@ -678,23 +1128,46 @@ const runBot = async () => {
     bot.hears(state.dataRosim[5].subcategories[0].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[0].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //эцп для юл
     bot.hears(state.dataRosim[5].subcategories[0].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[0].questions[1].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Не получается подписать
     bot.hears(state.dataRosim[5].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[1].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Как поменять сертификат
     bot.hears(state.dataRosim[5].subcategories[2].name, (ctx) => {
-        //ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[2].questions[0].answer, feedbackButton);
         const answer = state.dataBankrot[5].subcategories[2].questions[0].answer;
 
         let text = '';
@@ -704,30 +1177,70 @@ const runBot = async () => {
 
         ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Предоставление информации
     bot.hears(state.dataRosim[6].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[0].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Контакты организатора
     bot.hears(state.dataRosim[6].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[1].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Как найти торг
     bot.hears(state.dataRosim[6].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[2].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Как и когда подать заявку на участие
     bot.hears(state.dataRosim[6].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[3].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //БАНКРОТСТВО
@@ -738,6 +1251,14 @@ const runBot = async () => {
     //Контакты
     bot.hears(String(state.dataBankrot[1].category), (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[1].subcategories[0].questions[0].answer, feedbackButton);
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
         messageInfo = ctx.message.text;
     });
 
@@ -767,69 +1288,132 @@ const runBot = async () => {
 
     //Задаток на лс
     bot.hears(state.dataBankrot[0].subcategories[0].questions[0].question, (ctx) => {
-        const answer = state.dataBankrot[0].subcategories[0].questions[0].answer;
-
-        /* let text = '';
-        for (const element of answer.text.richText) {
-            text += element.text;
-        }
-
-        ctx.replyWithMarkdown(text, feedbackButton); */
         ctx.replyWithMarkdown(state.dataBankrot[0].subcategories[0].questions[0].answer.text, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Задаток на иной лс
     bot.hears(state.dataBankrot[0].subcategories[0].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[0].subcategories[0].questions[1].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Срок рассмотрения задаток
     bot.hears(state.dataBankrot[0].subcategories[0].questions[2].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[0].subcategories[0].questions[2].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Внесение задатка
     bot.hears(state.dataBankrot[0].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[0].subcategories[1].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Срок рассмотрения заявки
     bot.hears(state.dataBankrot[2].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[0].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Посмотреть заявку
     bot.hears(state.dataBankrot[2].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[1].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //подать заявкку
     bot.hears(state.dataBankrot[2].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[2].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //кто может подать заявку
     bot.hears(state.dataBankrot[2].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[3].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //отзовать заявку
     bot.hears(state.dataBankrot[2].subcategories[4].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[4].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //отредактировать заявку
     bot.hears(state.dataBankrot[2].subcategories[5].name, (ctx) => {
-        //ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[5].questions[0].answer, feedbackButton);
         const answer = state.dataBankrot[2].subcategories[5].questions[0].answer;
 
         let text = '';
@@ -839,53 +1423,116 @@ const runBot = async () => {
 
         ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //при попытке подать заявку... 1
     bot.hears(state.dataBankrot[2].subcategories[6].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[6].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //при попытке подать заявку... 2
     bot.hears(state.dataBankrot[2].subcategories[7].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[7].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //ускорение заявки
     bot.hears(state.dataBankrot[2].subcategories[8].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[2].subcategories[8].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //как подать заявку на присоединение
     bot.hears(state.dataBankrot[3].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[0].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //время рассмотрения
     bot.hears(state.dataBankrot[3].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[1].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //время рассмотрения регламента
     bot.hears(state.dataBankrot[3].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[2].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //время рассмотрения юр действия
     bot.hears(state.dataBankrot[3].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[3].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //регистрация
     bot.hears(state.dataBankrot[3].subcategories[4].name, (ctx) => {
-        //ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[4].questions[0].answer, feedbackButton);
         ctx.replyWithMarkdown("Вы выбрали регистрация на площадке. Выберите вопрос.", Markup.keyboard(getQuestionsAndAnswersBankrot(state.dataBankrot[3].category, 4).questions).resize());
         messageInfo = ctx.message.text;
     })
@@ -894,6 +1541,14 @@ const runBot = async () => {
     bot.hears(state.dataBankrot[3].subcategories[4].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[4].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
 
@@ -901,18 +1556,33 @@ const runBot = async () => {
     bot.hears(state.dataBankrot[3].subcategories[4].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[4].questions[1].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
 
     //Начал регистрацию на этп. Костыль. Жёстко забито, потому что текст не помещается в кнопку. 
-    bot.hears("Начал регистрацию на ЭТП. На первом шаге заполнил данные, затем на почту пришло уведомление об активации временного кода, я по нему…", (ctx) => { 
+    bot.hears("Начал регистрацию на ЭТП. На первом шаге заполнил данные, затем на почту пришло уведомление об активации временного кода, я по нему…", (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[4].questions[2].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //какие документы для регистрации
     bot.hears(state.dataBankrot[3].subcategories[4].questions[3].question, (ctx) => {
-        //ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[4].questions[3].answer, feedbackButton);
         const answer = state.dataBankrot[3].subcategories[4].questions[3].answer;
 
         let text = '';
@@ -922,6 +1592,14 @@ const runBot = async () => {
 
         ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
 
@@ -929,6 +1607,14 @@ const runBot = async () => {
     bot.hears(state.dataBankrot[3].subcategories[4].questions[4].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[4].questions[4].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
 
@@ -936,6 +1622,14 @@ const runBot = async () => {
     bot.hears(state.dataBankrot[3].subcategories[4].questions[5].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[4].questions[5].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
 
@@ -943,6 +1637,14 @@ const runBot = async () => {
     bot.hears(state.dataBankrot[3].subcategories[4].questions[6].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[4].questions[6].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
 
@@ -950,29 +1652,60 @@ const runBot = async () => {
     bot.hears(state.dataBankrot[3].subcategories[5].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[5].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //руководство по регистрации
     bot.hears(state.dataBankrot[3].subcategories[6].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[6].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //поступил отказ
     bot.hears(state.dataBankrot[3].subcategories[7].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[7].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //отозвать заявку
     bot.hears(state.dataBankrot[3].subcategories[8].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[8].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //ускорение регистрации
     bot.hears(state.dataBankrot[3].subcategories[9].name, (ctx) => {
-        //ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[9].questions[0].answer, feedbackButton);
         const answer = state.dataBankrot[3].subcategories[9].questions[0].answer;
 
         let text = '';
@@ -982,30 +1715,70 @@ const runBot = async () => {
 
         ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //срок действия регистрации
     bot.hears(state.dataBankrot[3].subcategories[10].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[3].subcategories[10].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Какой браузер
     bot.hears(state.dataBankrot[4].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[4].subcategories[0].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Забыл пароль
     bot.hears(state.dataBankrot[4].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[4].subcategories[1].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Срок дейстивя регистрации эцп
     bot.hears(state.dataBankrot[4].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[4].subcategories[2].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Какая эцп нужна
@@ -1017,23 +1790,46 @@ const runBot = async () => {
     bot.hears(state.dataBankrot[5].subcategories[0].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[0].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //эцп для юр л
     bot.hears(state.dataBankrot[5].subcategories[0].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[0].questions[1].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //не получается подписать
     bot.hears(state.dataBankrot[5].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[1].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //как поменять сертификат
     bot.hears(state.dataBankrot[5].subcategories[2].name, (ctx) => {
-        //ctx.replyWithMarkdown(state.dataBankrot[5].subcategories[2].questions[0].answer, feedbackButton);
         const answer = state.dataBankrot[5].subcategories[2].questions[0].answer;
 
         let text = '';
@@ -1043,50 +1839,98 @@ const runBot = async () => {
 
         ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Предоставление инфы
     bot.hears(state.dataBankrot[6].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[0].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Контакты организатора
     bot.hears(state.dataBankrot[6].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[1].questions[0].answer, feedbackButton);
-        /* const answer = state.dataBankrot[6].subcategories[1].questions[0].answer;
-
-        let text = '';
-        for (const element of answer.richText) {
-            text += element.text;
-        }
-
-        ctx.replyWithMarkdown(text, feedbackButton); */
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //Поиск публичка
     bot.hears(state.dataBankrot[6].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[2].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //поиск аукцион
     bot.hears(state.dataBankrot[6].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[3].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //поиск торгов
     bot.hears(state.dataBankrot[6].subcategories[4].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[4].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //как и когда подать заявку на участие
     bot.hears(state.dataBankrot[6].subcategories[5].name, (ctx) => {
         ctx.replyWithMarkdown(state.dataBankrot[6].subcategories[5].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
 
@@ -1127,18 +1971,42 @@ const runBot = async () => {
     bot.hears(state.data[0].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[0].category, 0).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Что такое псевдоним
     bot.hears(state.data[0].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(escapeMarkdown(getQuestionsAndAnswersRealty(state.data[0].category, 1).answers[0]), feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Как купить
     bot.hears(state.data[1].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[1].category, 0).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Обсуждение лота до покупки
@@ -1150,12 +2018,28 @@ const runBot = async () => {
     bot.hears(state.data[1].subcategories[1].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.data[1].subcategories[1].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
     //ответ на сообщение
     bot.hears(state.data[1].subcategories[1].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(state.data[1].subcategories[1].questions[1].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     })
 
 
@@ -1163,24 +2047,56 @@ const runBot = async () => {
     bot.hears(state.data[1].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[1].category, 2).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Прохождение торгов
     bot.hears(state.data[1].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[1].category, 3).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Избранные лоты
     bot.hears(state.data[2].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[2].category, 0).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Чёрный список продавцов
     bot.hears(state.data[2].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[2].category, 1).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Как продавать
@@ -1192,6 +2108,14 @@ const runBot = async () => {
     bot.hears(state.data[3].subcategories[0].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(state.data[3].subcategories[0].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
 
@@ -1213,13 +2137,22 @@ const runBot = async () => {
         } else {
             message = `Пользователю ${user.last_name} ${user.last_name} нужна помощь @${ctx.message.from.username} (${user.id})`;
         }
-        let chatId = 797596124;
+        let chatId = 4166037569;
 
         bot.telegram.sendMessage(chatId, message).then(() => {
             ctx.replyWithMarkdown('С вами в ближайшее время свяжется оператор. Ожидайте ответа!', sitesButton);
+            logger.infoLogger(
+                `Пользователю понадобились услуги агента`,
+                `bot.hears`,
+                `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+                `${totalLotid}`,
+                `${totalSite}`,
+                `${messageInfo}`
+            )
         })
             .catch((error) => {
-                console.error('Error sending message:', error);
+                //console.error('Error sending message:', error);
+                logger.errorLogger(`Error sending message ${error}`, 'bot.hears')
                 ctx.reply('Произошла ошибка при отправке сообщения');
             });;
     });
@@ -1228,108 +2161,252 @@ const runBot = async () => {
     bot.hears(state.data[3].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[3].category, 1).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Режим отпуск
     bot.hears(state.data[3].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[3].category, 2).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Инструкция заполнения лота
     bot.hears(state.data[3].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[3].category, 3).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Чёрный список покупателей
     bot.hears(state.data[4].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[4].category, 0).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Ограничение по рейтингу покупателей
     bot.hears(state.data[4].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[4].category, 1).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Антиснайпер
     bot.hears(state.data[4].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[4].category, 2).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Замена пароля
     bot.hears(state.data[5].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 0).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Роль емайла
     bot.hears(state.data[5].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 1).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Восстановление доступа
     bot.hears(state.data[5].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 2).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Проблема с авторизацией
     bot.hears(state.data[5].subcategories[3].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 3).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Аватарка пользователя
     bot.hears(state.data[5].subcategories[4].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 4).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Активность
     bot.hears(state.data[5].subcategories[5].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 5).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Уведомление
     bot.hears(state.data[5].subcategories[6].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 6).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Какой браузер
     bot.hears(state.data[5].subcategories[7].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[5].category, 7).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Что такое отзыв
     bot.hears(state.data[6].subcategories[0].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[6].category, 0).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Что должен содержать отзыв
     bot.hears(state.data[6].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[6].category, 1).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Как оставить отзыв
     bot.hears(state.data[6].subcategories[2].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[6].category, 2).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //тарифы
     bot.hears(state.data[7].category, (ctx) => {
         ctx.replyWithMarkdown(state.data[7].subcategories[0].questions[0].answer["hyperlink"], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Какая эцп
@@ -1341,23 +2418,46 @@ const runBot = async () => {
     bot.hears(state.data[8].subcategories[0].questions[0].question, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[8].category, 0).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //ЭЦП для юл и ип
     bot.hears(state.data[8].subcategories[0].questions[1].question, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[8].category, 0).answers[1], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Не получается подписать
     bot.hears(state.data[8].subcategories[1].name, (ctx) => {
         ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[8].category, 1).answers[0], feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     //Как поменять сертификат
     bot.hears(state.data[8].subcategories[2].name, (ctx) => {
-        //ctx.replyWithMarkdown(getQuestionsAndAnswersRealty(state.data[8].category, 2).answers[0], feedbackButton);
         const answer = state.data[8].subcategories[2].questions[0].answer;
 
         let text = '';
@@ -1367,6 +2467,14 @@ const runBot = async () => {
 
         ctx.replyWithMarkdown(text, feedbackButton);
         messageInfo = ctx.message.text;
+        logger.infoLogger(
+            `Пользователь завершает скрипт`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `${messageInfo}`
+        )
     });
 
     bot.hears("Задать другой вопрос", (ctx) => {
@@ -1377,6 +2485,14 @@ const runBot = async () => {
         } else {
             ctx.replyWithMarkdown('С какой площадкой вам нужна помощь?', sitesButton)
         }
+        logger.infoLogger(
+            `Пользователь хочет задать другой вопрос`,
+            `bot.hears`,
+            `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+            `${totalLotid}`,
+            `${totalSite}`,
+            `Задать другой вопрос`
+        )
     })
 
     bot.hears('Бот помог', (ctx) => {
@@ -1391,13 +2507,22 @@ const runBot = async () => {
         } else {
             message = `Пользователю ${user.last_name} ${user.last_name} нужна помощь @${ctx.message.from.username} (${user.id})`;
         }
-        let chatId = 797596124;
+        let chatId = 4166037569;
 
         bot.telegram.sendMessage(chatId, message).then(() => {
             ctx.replyWithMarkdown('С вами в ближайшее время свяжется оператор. Ожидайте ответа!', sitesButton);
+            logger.infoLogger(
+                `Пользователь хочет связаться с оператором`,
+                `bot.hears`,
+                `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
+                `${totalLotid}`,
+                `${totalSite}`,
+                `Связаться с оператором`
+            )
         })
             .catch((error) => {
-                console.error('Error sending message:', error);
+                //console.error('Error sending message:', error);
+                logger.errorLogger(`${error}`, 'Bot.hears');
                 ctx.reply('Произошла ошибка при отправке сообщения');
             });;
     });
@@ -1407,7 +2532,7 @@ runBot()
     .then(() => console.log('Данные успешно обработаны!'))
     .catch((error) => console.error('Ошибка обработки данных:', error));;
 
- 
+
 
 bot.launch().then(() => console.log('Started'));
 
