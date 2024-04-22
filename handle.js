@@ -139,7 +139,6 @@ const getQuestionsAndAnswersArt = (category) => {
 }
 
 const feedbackButton = Markup.keyboard([
-    Markup.button.callback("Бот помог"),
     Markup.button.callback("Связаться с оператором"),
     Markup.button.callback("Задать другой вопрос")
 ])
