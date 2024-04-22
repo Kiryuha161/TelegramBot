@@ -2137,7 +2137,7 @@ const runBot = async () => {
         } else {
             message = `Пользователю ${user.last_name} ${user.last_name} нужна помощь @${ctx.message.from.username} (${user.id})`;
         }
-        let chatId = 4166037569;
+        let chatId = -4166037569;
 
         bot.telegram.sendMessage(chatId, message).then(() => {
             ctx.replyWithMarkdown('С вами в ближайшее время свяжется оператор. Ожидайте ответа!', sitesButton);
@@ -2507,7 +2507,7 @@ const runBot = async () => {
         } else {
             message = `Пользователю ${user.last_name} ${user.last_name} нужна помощь @${ctx.message.from.username} (${user.id})`;
         }
-        let chatId = 4166037569;
+        let chatId = -4166037569;
 
         bot.telegram.sendMessage(chatId, message).then(() => {
             ctx.replyWithMarkdown('С вами в ближайшее время свяжется оператор. Ожидайте ответа!', sitesButton);
