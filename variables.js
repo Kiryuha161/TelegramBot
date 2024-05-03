@@ -171,7 +171,7 @@ const getRosimSubcategoriesButtons = (chapter) => {
     return subcategoriesButton;
 }
 
-const getQuestionsAndAnswersRealty = (category, subcategoryIndex) => {
+const getQuestionsAndAnswersRealty = (category, subcategoryIndex) => { //Получение вопросов и ответов для бота
     let questionsAndAnswers = {};
 
     const categoryData = data.find(item => item.category === category);
@@ -185,7 +185,7 @@ const getQuestionsAndAnswersRealty = (category, subcategoryIndex) => {
     return questionsAndAnswers;
 }
 
-const getQuestionsAndAnswersBankrot = (category, subcategoryIndex) => {
+const getQuestionsAndAnswersBankrot = (category, subcategoryIndex) => { //Получение вопросов и ответов для бота
     let questionsAndAnswers = {};
 
     const categoryData = dataBankrot.find(item => item.category === category);
@@ -199,7 +199,7 @@ const getQuestionsAndAnswersBankrot = (category, subcategoryIndex) => {
     return questionsAndAnswers;
 }
 
-const getQuestionsAndAnswersRosim = (category, subcategoryIndex) => {
+const getQuestionsAndAnswersRosim = (category, subcategoryIndex) => { //Получение вопросов и ответов для бота
     let questionsAndAnswers = {};
 
     const categoryData = dataRosim.find(item => item.category === category);
@@ -213,7 +213,7 @@ const getQuestionsAndAnswersRosim = (category, subcategoryIndex) => {
     return questionsAndAnswers;
 }
 
-const getQuestionsAndAnswersArt = (category) => {
+const getQuestionsAndAnswersArt = (category) => { //Получение вопросов и ответов для бота
     let questionsAndAnswers = {};
 
     const categoryData = dataArt.find(item => item.category === category);
@@ -294,6 +294,32 @@ const createCategoryButtons =() => {
         rosimSubcategoriesTechnicalQuestionButtons, rosimSubcategoriesSignatureButtons, rosimSubcategoriesTradeButtons }
 }
 
+const sitesMessages = [
+    "Вы выбрали сайт Viomitra.Банкротство. Выберите категорию вопроса.",
+    "Вы выбрали сайт Viomitra.Коммерческие торги. Выберите категорию вопроса.",
+    "Вы выбрали сайт Viomitra.Росимущество. Выберите категорию вопроса.",
+    "Вы выбрали сайт Viomitra.Арт. Выберите категорию вопроса"
+]
+
+const categoriesMessages = [
+
+]
+
+const getAnswers =(data, chatData) => { //Получение ответов для веб-интерфейса
+    console.log("data: " + JSON.stringify(data));
+    console.log("chatData: " + JSON.stringify(chatData));
+    
+    data.forEach(category => {
+        if (category.questions) {
+            category.questions.forEach(qa => {
+                if (qa.question === chatData.question) {
+                    answer = qa.answer;
+                }
+            });
+        }
+    });
+}
+
 const getFullData =() => {
     fullData.push(sites);
     fullData.push(data);
@@ -314,10 +340,12 @@ module.exports = {
     getQuestionsAndAnswersArt: getQuestionsAndAnswersArt,
     createCategoryButtons: createCategoryButtons,
     getFullData: getFullData,
+    getAnswers: getAnswers,
     feedbackButton: feedbackButton,
     state: {
         data: data,
         sites: sites,
+        sitesMessages: sitesMessages,
         dataBankrot: dataBankrot,
         dataRosim: dataRosim,
         dataArt: dataArt,
