@@ -2,204 +2,22 @@ const { Telegraf } = require('telegraf');
 const Markup = require('telegraf/markup');
 let state = require('./variables.js').state;
 let handleData = require('./variables.js').handleData;
+let { escapeMarkdown, getBankrotSubcategoriesButtons, getRealtySubcategoriesButtons, getRosimSubcategoriesButtons,
+    getQuestionsAndAnswersRealty, getQuestionsAndAnswersBankrot, getQuestionsAndAnswersRosim, getQuestionsAndAnswersArt,
+    createCategoryButtons} = require('./variables.js');
+let { feedbackButton } = require('./variables.js');
 let logger = require('./logger.js');
 
-//const bot = new Telegraf('6366545078:AAFZjWTJXL4RQ3rG6yvesEj-X0CciRb1JoU');
-const bot = new Telegraf('7003796600:AAGb5yvtAOPefwtTArVgVPQMGxKl-G2JzNY');
+const bot = new Telegraf('6366545078:AAFZjWTJXL4RQ3rG6yvesEj-X0CciRb1JoU');
+//const bot = new Telegraf('7003796600:AAGb5yvtAOPefwtTArVgVPQMGxKl-G2JzNY');
 
 let messageInfo = "";
 let totalLotid = "";
 let totalSite = "";
 
-const SPECIAL_CHARS = [
-    '_',
-    '*',
-    '[',
-    ']',
-    '~',
-    '`',
-    '&',
-    '#',
-    '+',
-    '=',
-    '|',
-    '{',
-    '}',
-    '.',
-    '!',
-    '\''
-]
-
-const escapeMarkdown = (text) => {
-    SPECIAL_CHARS.forEach(char => (text = text.replaceAll(char, `\\${char}`)))
-    return text
-}
-
-const getRealtySubcategoriesButtons = (chapter) => {
-    let subcategories = [];
-
-    const data = state.data.find(category => category.category === chapter);
-
-    if (data && Array.isArray(data.subcategories)) {
-        subcategories = data.subcategories;
-    }
-
-    let subcategoriesButton = Markup.keyboard(
-        subcategories.map(subcategory => Markup.button.callback(subcategory.name))
-    );
-
-    return subcategoriesButton;
-}
-
-const getBankrotSubcategoriesButtons = (chapter) => {
-    let subcategories = [];
-
-    const data = state.dataBankrot.find(category => category.category === chapter);
-
-    if (data && Array.isArray(data.subcategories)) {
-        subcategories = data.subcategories;
-    }
-
-    let subcategoriesButton = Markup.keyboard(
-        subcategories.map(subcategory => Markup.button.callback(subcategory.name))
-    );
-
-    return subcategoriesButton;
-}
-
-const getRosimSubcategoriesButtons = (chapter) => {
-    let subcategories = [];
-
-    const data = state.dataRosim.find(category => category.category === chapter);
-
-    if (data && Array.isArray(data.subcategories)) {
-        subcategories = data.subcategories;
-    }
-
-    let subcategoriesButton = Markup.keyboard(
-        subcategories.map(subcategory => Markup.button.callback(subcategory.name))
-    );
-
-    return subcategoriesButton;
-}
-
-const getQuestionsAndAnswersRealty = (category, subcategoryIndex) => {
-    let questionsAndAnswers = {};
-
-    const categoryData = state.data.find(item => item.category === category);
-    if (categoryData && Array.isArray(categoryData.subcategories) && categoryData.subcategories.length > subcategoryIndex) {
-        const subcategory = categoryData.subcategories[subcategoryIndex];
-        questionsAndAnswers.subcategory = subcategory.name;
-        questionsAndAnswers.questions = subcategory.questions.map(question => question.question);
-        questionsAndAnswers.answers = subcategory.questions.map(question => question.answer);
-    }
-
-    return questionsAndAnswers;
-}
-
-const getQuestionsAndAnswersBankrot = (category, subcategoryIndex) => {
-    let questionsAndAnswers = {};
-
-    const categoryData = state.dataBankrot.find(item => item.category === category);
-    if (categoryData && Array.isArray(categoryData.subcategories) && categoryData.subcategories.length > subcategoryIndex) {
-        const subcategory = categoryData.subcategories[subcategoryIndex];
-        questionsAndAnswers.subcategory = subcategory.name;
-        questionsAndAnswers.questions = subcategory.questions.map(question => question.question);
-        questionsAndAnswers.answers = subcategory.questions.map(question => question.answer);
-    }
-
-    return questionsAndAnswers;
-}
-
-const getQuestionsAndAnswersRosim = (category, subcategoryIndex) => {
-    let questionsAndAnswers = {};
-
-    const categoryData = state.dataRosim.find(item => item.category === category);
-    if (categoryData && Array.isArray(categoryData.subcategories) && categoryData.subcategories.length > subcategoryIndex) {
-        const subcategory = categoryData.subcategories[subcategoryIndex];
-        questionsAndAnswers.subcategory = subcategory.name;
-        questionsAndAnswers.questions = subcategory.questions.map(question => question.question);
-        questionsAndAnswers.answers = subcategory.questions.map(question => question.answer);
-    }
-
-    return questionsAndAnswers;
-}
-
-const getQuestionsAndAnswersArt = (category) => {
-    let questionsAndAnswers = {};
-
-    const categoryData = state.dataArt.find(item => item.category === category);
-    if (categoryData) {
-        questionsAndAnswers.category = categoryData.category;
-        questionsAndAnswers.questions = categoryData.questions.map(question => question.question);
-        questionsAndAnswers.answers = categoryData.questions.map(question => question.answer);
-    }
-
-    return questionsAndAnswers;
-}
-
-const feedbackButton = Markup.keyboard([
-    Markup.button.callback("Связаться с оператором"),
-    Markup.button.callback("Задать другой вопрос")
-])
-
 const runBot = async () => {
     await handleData();
     console.log(state.data);
-
-    let sitesButton = Markup.keyboard(state.sites.map(site => Markup.button.callback(site)));
-    const uniqueRealtyCategories = new Set(state.data.map(category => category.category));
-    const uniqueBankrotCategories = new Set(state.dataBankrot.map(category => category.category));
-    const uniqueRosimCategories = new Set(state.dataRosim.map(category => category.category));
-    const uniqueArtCategories = new Set(state.dataArt.map(category => category.category))
-
-    let realtyCategoriesButton = Markup.keyboard(
-        [...uniqueRealtyCategories]
-            .filter(category => category) // Фильтрация пустых или неопределенных значений
-            .map(category => Markup.button.callback(category))
-    );
-
-    let bankrotCategoriesButton = Markup.keyboard(
-        [...uniqueBankrotCategories]
-            .filter(category => category)
-            .map(category => Markup.button.callback(category))
-    )
-
-    let rosimCategoriesButton = Markup.keyboard(
-        [...uniqueRosimCategories]
-            .filter(category => category)
-            .map(category => Markup.button.callback(category))
-    )
-
-    let artCategoriesButton = Markup.keyboard(
-        [...uniqueArtCategories]
-            .filter(category => category)
-            .map(category => Markup.button.callback(category))
-    )
-
-
-    let realtySubcategoriesRegistrationButton = getRealtySubcategoriesButtons(String(state.data[0].category));
-    let realtySubcategoriesBuyButton = getRealtySubcategoriesButtons(String(state.data[1].category));
-    let realtySubcategoriesPossibleBuyerButton = getRealtySubcategoriesButtons(String(state.data[2].category));
-    let realtySubcategoriesSellButton = getRealtySubcategoriesButtons(String(state.data[3].category));
-    let realtySubcategoriesPossibleSellerButton = getRealtySubcategoriesButtons(String(state.data[4].category));
-    let realtySubcategoriesTechnicalQuestionsButton = getRealtySubcategoriesButtons(String(state.data[5].category));
-    let realtySubcagtegoriesReviewButton = getRealtySubcategoriesButtons(String(state.data[6].category));
-    let realtySubcategoriesLegalForceButton = getRealtySubcategoriesButtons(String(state.data[8].category));
-
-    let bankrotSubcategoriesDepositButtons = getBankrotSubcategoriesButtons(String(state.dataBankrot[0].category));
-    let bankrotApplicationOnParticipationToTradeButtons = getBankrotSubcategoriesButtons(String(state.dataBankrot[2].category));
-    let bankrotRegistrationButtons = getBankrotSubcategoriesButtons(String(state.dataBankrot[3].category));
-    let bankrotTechnicalQuestionButtons = getBankrotSubcategoriesButtons(String(state.dataBankrot[4].category));
-    let bankrotSignatureButtons = getBankrotSubcategoriesButtons(String(state.dataBankrot[5].category));
-    let bankrotTradeButtons = getBankrotSubcategoriesButtons(String(state.dataBankrot[6].category));
-
-    let rosimSubcategoriesDepositButtons = getRosimSubcategoriesButtons(String(state.dataRosim[0].category));
-    let rosimApplicateionOnParticipationToTradeButtons = getRosimSubcategoriesButtons(String(state.dataRosim[2].category));
-    let rosimSubcategoriesRegistrationButtons = getRosimSubcategoriesButtons(String(state.dataRosim[3].category));
-    let rosimSubcategoriesTechnicalQuestionButtons = getRosimSubcategoriesButtons(String(state.dataRosim[4].category));
-    let rosimSubcategoriesSignatureButtons = getRosimSubcategoriesButtons(String(state.dataRosim[5].category));
-    let rosimSubcategoriesTradeButtons = getRosimSubcategoriesButtons(String(state.dataRosim[6].category));
 
     bot.start((ctx) => {
         let message = ctx.message.text;
@@ -209,20 +27,20 @@ const runBot = async () => {
         try {
             if (message === "/start") {
                 if (ctx.message.from.username) {
-                    ctx.replyWithMarkdown(`Привет, ${ctx.message.from.username}! С какой площадкой вам нужна помощь?`, sitesButton);
+                    ctx.replyWithMarkdown(`Привет, ${ctx.message.from.username}! С какой площадкой вам нужна помощь?`, createCategoryButtons().sitesButton);
                 } else if (ctx.message.from.first_name) {
-                    ctx.replyWithMarkdown(`Привет, ${ctx.message.from.first_name}!  С какой площадкой вам нужна помощь?`, sitesButton);
+                    ctx.replyWithMarkdown(`Привет, ${ctx.message.from.first_name}!  С какой площадкой вам нужна помощь?`, createCategoryButtons().sitesButton);
                 } else {
-                    ctx.replyWithMarkdown('Привет! С какой площадкой вам нужна помощь?', sitesButton);
+                    ctx.replyWithMarkdown('Привет! С какой площадкой вам нужна помощь?', createCategoryButtons().sitesButton);
                 }
             } else if (message.includes("bankrot")) {
-                ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Банкротство. Выберите категорию вопроса.", bankrotCategoriesButton);
+                ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Банкротство. Выберите категорию вопроса.", createCategoryButtons().bankrotCategoriesButton);
             } else if (message.includes("realty")) {
-                ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Коммерческие торги. Выберите категорию вопроса.", realtyCategoriesButton);
+                ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Коммерческие торги. Выберите категорию вопроса.", createCategoryButtons().realtyCategoriesButton);
             } else if (message.includes("rosim")) {
-                ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Росимущество. Выберите категорию вопроса.", rosimCategoriesButton);
+                ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Росимущество. Выберите категорию вопроса.", createCategoryButtons().rosimCategoriesButton);
             } else if (message.includes("art")) {
-                ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Арт. Выберите категорию вопроса", artCategoriesButton);
+                ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Арт. Выберите категорию вопроса", createCategoryButtons().artCategoriesButton);
             }
             logger.infoLogger(
                 `Пользователь перешёл в телеграм-бот`,
@@ -235,7 +53,7 @@ const runBot = async () => {
 
             if (lotId) {
                 totalLotid = lotId[lotId.length - 1];
-            } 
+            }
 
             if (site) {
                 totalSite = site;
@@ -248,19 +66,19 @@ const runBot = async () => {
 
     //ВЫБОР САЙТОВ
     bot.hears(String(state.sites[0]), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Банкротство. Выберите категорию вопроса.", bankrotCategoriesButton);
+        ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Банкротство. Выберите категорию вопроса.", createCategoryButtons().bankrotCategoriesButton);
     })
 
     bot.hears(String(state.sites[1]), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Коммерческие торги. Выберите категорию вопроса.", realtyCategoriesButton);
+        ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Коммерческие торги. Выберите категорию вопроса.", createCategoryButtons().realtyCategoriesButton);
     })
 
     bot.hears(String(state.sites[2]), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Росимущество. Выберите категорию вопроса.", rosimCategoriesButton);
+        ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Росимущество. Выберите категорию вопроса.", createCategoryButtons().rosimCategoriesButton);
     })
 
     bot.hears(String(state.sites[3]), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Арт. Выберите категорию вопроса", artCategoriesButton);
+        ctx.replyWithMarkdown("Вы выбрали сайт Viomitra.Арт. Выберите категорию вопроса", createCategoryButtons().artCategoriesButton);
     })
 
     //АРТ
@@ -583,7 +401,7 @@ const runBot = async () => {
 
     //РОСИМУЩЕСТВО
     bot.hears(String(state.dataRosim[0].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали задаток. Выберите подкатегорию вопроса.", rosimSubcategoriesDepositButtons);
+        ctx.replyWithMarkdown("Вы выбрали задаток. Выберите подкатегорию вопроса.", createCategoryButtons().rosimSubcategoriesDepositButtons);
     });
 
     bot.hears(String(state.dataRosim[1].category), (ctx) => {
@@ -592,23 +410,23 @@ const runBot = async () => {
     });
 
     bot.hears(String(state.dataRosim[2].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали заявка на участие в торгах. Выберите подкатегорию вопроса.", rosimApplicateionOnParticipationToTradeButtons);
+        ctx.replyWithMarkdown("Вы выбрали заявка на участие в торгах. Выберите подкатегорию вопроса.", createCategoryButtons().rosimApplicateionOnParticipationToTradeButtons);
     });
 
     bot.hears(String(state.dataRosim[3].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали регистрация участника. Выберите подкатегорию вопроса.", rosimSubcategoriesRegistrationButtons);
+        ctx.replyWithMarkdown("Вы выбрали регистрация участника. Выберите подкатегорию вопроса.", createCategoryButtons().rosimSubcategoriesRegistrationButtons);
     });
 
     bot.hears(String(state.dataRosim[4].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали технические вопросы. Выберите подкатегорию вопроса.", rosimSubcategoriesTechnicalQuestionButtons);
+        ctx.replyWithMarkdown("Вы выбрали технические вопросы. Выберите подкатегорию вопроса.", createCategoryButtons().rosimSubcategoriesTechnicalQuestionButtons);
     });
 
     bot.hears(String(state.dataRosim[5].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали ЭЦП. Выберите подкатегорию вопроса.", rosimSubcategoriesSignatureButtons);
+        ctx.replyWithMarkdown("Вы выбрали ЭЦП. Выберите подкатегорию вопроса.", createCategoryButtons().rosimSubcategoriesSignatureButtons);
     });
 
     bot.hears(String(state.dataRosim[6].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали торги. Выберите подкатегорию вопроса.", rosimSubcategoriesTradeButtons);
+        ctx.replyWithMarkdown("Вы выбрали торги. Выберите подкатегорию вопроса.", createCategoryButtons().rosimSubcategoriesTradeButtons);
     });
 
     //возврат задатка
@@ -1244,7 +1062,7 @@ const runBot = async () => {
 
     //БАНКРОТСТВО
     bot.hears(String(state.dataBankrot[0].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали задаток. Выберите подкатегорию вопроса.", bankrotSubcategoriesDepositButtons);
+        ctx.replyWithMarkdown("Вы выбрали задаток. Выберите подкатегорию вопроса.", createCategoryButtons().bankrotSubcategoriesDepositButtons);
     });
 
     //Контакты
@@ -1262,23 +1080,23 @@ const runBot = async () => {
     });
 
     bot.hears(String(state.dataBankrot[2].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали заявка на участие в торгах. Выберите подкатегорию вопроса.", bankrotApplicationOnParticipationToTradeButtons);
+        ctx.replyWithMarkdown("Вы выбрали заявка на участие в торгах. Выберите подкатегорию вопроса.", createCategoryButtons().bankrotApplicationOnParticipationToTradeButtons);
     });
 
     bot.hears(String(state.dataBankrot[3].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали регистрация участника. Выберите подкатегорию вопроса.", bankrotRegistrationButtons);
+        ctx.replyWithMarkdown("Вы выбрали регистрация участника. Выберите подкатегорию вопроса.", createCategoryButtons().bankrotRegistrationButtons);
     });
 
     bot.hears(String(state.dataBankrot[4].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали технические вопросы. Выберите подкатегорию вопроса.", bankrotTechnicalQuestionButtons);
+        ctx.replyWithMarkdown("Вы выбрали технические вопросы. Выберите подкатегорию вопроса.", createCategoryButtons().bankrotTechnicalQuestionButtons);
     });
 
     bot.hears(String(state.dataBankrot[5].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали ЭЦП. Выберите подкатегорию вопроса.", bankrotSignatureButtons);
+        ctx.replyWithMarkdown("Вы выбрали ЭЦП. Выберите подкатегорию вопроса.", createCategoryButtons().bankrotSignatureButtons);
     });
 
     bot.hears(String(state.dataBankrot[6].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали торги. Выберите подкатегорию вопроса.", bankrotTradeButtons);
+        ctx.replyWithMarkdown("Вы выбрали торги. Выберите подкатегорию вопроса.", createCategoryButtons().bankrotTradeButtons);
     });
 
     bot.hears(state.dataBankrot[0].subcategories[0].name, (ctx) => {
@@ -1935,35 +1753,35 @@ const runBot = async () => {
 
     //КОММЕРЧЕСКИЕ ТОРГИ
     bot.hears(String(state.data[0].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали регистрацию. Выберите подкатегорию", realtySubcategoriesRegistrationButton);
+        ctx.replyWithMarkdown("Вы выбрали регистрацию. Выберите подкатегорию", createCategoryButtons().realtySubcategoriesRegistrationButton);
     })
 
     bot.hears(String(state.data[1].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали покупку. Выберите подкатегорию", realtySubcategoriesBuyButton);
+        ctx.replyWithMarkdown("Вы выбрали покупку. Выберите подкатегорию", createCategoryButtons().realtySubcategoriesBuyButton);
     });
 
     bot.hears(String(state.data[2].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали возможности покупателя. Выберите подкатегорию", realtySubcategoriesPossibleBuyerButton);
+        ctx.replyWithMarkdown("Вы выбрали возможности покупателя. Выберите подкатегорию", createCategoryButtons().realtySubcategoriesPossibleBuyerButton);
     });
 
     bot.hears(String(state.data[3].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали продажу. Выберите подкатегорию", realtySubcategoriesSellButton);
+        ctx.replyWithMarkdown("Вы выбрали продажу. Выберите подкатегорию", createCategoryButtons().realtySubcategoriesSellButton);
     });
 
     bot.hears(String(state.data[4].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали возможности продавца. Выберите подкатегорию", realtySubcategoriesPossibleSellerButton);
+        ctx.replyWithMarkdown("Вы выбрали возможности продавца. Выберите подкатегорию", createCategoryButtons().realtySubcategoriesPossibleSellerButton);
     });
 
     bot.hears(String(state.data[5].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали технические вопросы. Выберите подкатегорию", realtySubcategoriesTechnicalQuestionsButton);
+        ctx.replyWithMarkdown("Вы выбрали технические вопросы. Выберите подкатегорию", createCategoryButtons().realtySubcategoriesTechnicalQuestionsButton);
     });
 
     bot.hears(String(state.data[6].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали отзывы. Выберите подкатегорию", realtySubcagtegoriesReviewButton);
+        ctx.replyWithMarkdown("Вы выбрали отзывы. Выберите подкатегорию", createCategoryButtons().realtySubcagtegoriesReviewButton);
     });
 
     bot.hears(String(state.data[8].category), (ctx) => {
-        ctx.replyWithMarkdown("Вы выбрали сделки с юр.действиями. Выберите подкатегорию", realtySubcategoriesLegalForceButton);
+        ctx.replyWithMarkdown("Вы выбрали сделки с юр.действиями. Выберите подкатегорию", createCategoryButtons().realtySubcategoriesLegalForceButton);
     });
 
     //Как зарегистрироваться
@@ -2139,7 +1957,7 @@ const runBot = async () => {
         let chatId = -4166037569;
 
         bot.telegram.sendMessage(chatId, message).then(() => {
-            ctx.replyWithMarkdown('С вами в ближайшее время свяжется оператор. Ожидайте ответа!', sitesButton);
+            ctx.replyWithMarkdown('С вами в ближайшее время свяжется оператор. Ожидайте ответа!', createCategoryButtons().sitesButton);
             logger.infoLogger(
                 `Пользователю понадобились услуги агента`,
                 `bot.hears`,
@@ -2478,11 +2296,11 @@ const runBot = async () => {
 
     bot.hears("Задать другой вопрос", (ctx) => {
         if (ctx.message.from.username) {
-            ctx.replyWithMarkdown(`С какой площадкой вам нужна помощь, ${ctx.message.from.username}?`, sitesButton);
+            ctx.replyWithMarkdown(`С какой площадкой вам нужна помощь, ${ctx.message.from.username}?`, createCategoryButtons().sitesButton);
         } else if (ctx.message.from.first_name) {
-            ctx.replyWithMarkdown(`С какой площадкой вам нужна помощь, ${ctx.message.from.first_name}?`, sitesButton);
+            ctx.replyWithMarkdown(`С какой площадкой вам нужна помощь, ${ctx.message.from.first_name}?`, createCategoryButtons().sitesButton);
         } else {
-            ctx.replyWithMarkdown('С какой площадкой вам нужна помощь?', sitesButton)
+            ctx.replyWithMarkdown('С какой площадкой вам нужна помощь?', createCategoryButtons().sitesButton)
         }
         logger.infoLogger(
             `Пользователь хочет задать другой вопрос`,
@@ -2509,7 +2327,7 @@ const runBot = async () => {
         let chatId = -4166037569;
 
         bot.telegram.sendMessage(chatId, message).then(() => {
-            ctx.replyWithMarkdown('С вами в ближайшее время свяжется оператор. Ожидайте ответа!', sitesButton);
+            ctx.replyWithMarkdown('С вами в ближайшее время свяжется оператор. Ожидайте ответа!', createCategoryButtons().sitesButton);
             logger.infoLogger(
                 `Пользователь хочет связаться с оператором`,
                 `bot.hears`,
