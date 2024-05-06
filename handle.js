@@ -8,8 +8,8 @@ let { escapeMarkdown, getBankrotSubcategoriesButtons, getRealtySubcategoriesButt
 let { feedbackButton } = require('./variables.js');
 let logger = require('./logger.js');
 
-const bot = new Telegraf('6366545078:AAFZjWTJXL4RQ3rG6yvesEj-X0CciRb1JoU');
-//const bot = new Telegraf('7003796600:AAGb5yvtAOPefwtTArVgVPQMGxKl-G2JzNY');
+//const bot = new Telegraf('6366545078:AAFZjWTJXL4RQ3rG6yvesEj-X0CciRb1JoU');
+const bot = new Telegraf('7003796600:AAGb5yvtAOPefwtTArVgVPQMGxKl-G2JzNY');
 
 let messageInfo = "";
 let totalLotid = "";
@@ -48,7 +48,8 @@ const runBot = async () => {
                 `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
                 `${lotId ? lotId[lotId.length - 1] : ''}`,
                 `${site ? site : ''}`,
-                ''
+                '',
+                "Telegram-bot"
             )
 
             if (lotId) {
@@ -60,7 +61,7 @@ const runBot = async () => {
             }
 
         } catch {
-            logger.errorLogger("Ошибка", `/start ${message}`)
+            logger.errorLogger("Ошибка", `/start ${message}`, "Telegram-bot")
         }
     });
 
@@ -116,7 +117,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot"
         )
     })
 
@@ -130,7 +132,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot"
         )
     })
 
@@ -144,7 +147,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot"
         )
     })
 
@@ -159,7 +163,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot"
         )
     })
 
@@ -174,7 +179,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot"
         )
     })
 
@@ -188,7 +194,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot"
         )
     })
 
@@ -203,7 +210,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot"
         )
     })
 
@@ -218,7 +226,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot"
         )
     })
 
@@ -233,7 +242,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot"
         )
     })
 
@@ -247,7 +257,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -261,7 +272,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -275,7 +287,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -289,7 +302,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -303,7 +317,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -317,7 +332,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -331,7 +347,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -345,7 +362,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -359,7 +377,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -373,7 +392,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -394,7 +414,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -439,7 +460,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -453,7 +475,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -467,7 +490,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -481,7 +505,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -495,7 +520,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -509,7 +535,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -523,7 +550,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -544,7 +572,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -558,7 +587,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -572,7 +602,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -586,7 +617,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -600,7 +632,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -614,7 +647,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -628,7 +662,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -642,7 +677,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -661,7 +697,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -675,7 +712,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -689,7 +727,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -710,7 +749,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -724,7 +764,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -738,7 +779,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -752,7 +794,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -766,7 +809,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -780,7 +824,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -798,7 +843,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
         messageInfo = ctx.message.text;
     });
@@ -813,7 +859,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -827,7 +874,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -841,7 +889,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -855,7 +904,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -876,7 +926,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -890,7 +941,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -904,7 +956,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -918,7 +971,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -932,7 +986,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -951,7 +1006,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -965,7 +1021,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -979,7 +1036,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -1000,7 +1058,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -1014,7 +1073,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -1028,7 +1088,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -1042,7 +1103,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -1056,7 +1118,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -1074,7 +1137,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
         messageInfo = ctx.message.text;
     });
@@ -1113,7 +1177,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -1127,7 +1192,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -1141,7 +1207,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -1155,7 +1222,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1169,7 +1237,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1183,7 +1252,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1197,7 +1267,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1211,7 +1282,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1225,7 +1297,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1246,7 +1319,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1260,7 +1334,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1274,7 +1349,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1288,7 +1364,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1302,7 +1379,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1316,7 +1394,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1330,7 +1409,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1344,7 +1424,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1364,7 +1445,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1379,7 +1461,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1394,7 +1477,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1415,7 +1499,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1430,7 +1515,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1445,7 +1531,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1460,7 +1547,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1475,7 +1563,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1489,7 +1578,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1503,7 +1593,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1517,7 +1608,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1538,7 +1630,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1552,7 +1645,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1566,7 +1660,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1580,7 +1675,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1594,7 +1690,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1613,7 +1710,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1627,7 +1725,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1641,7 +1740,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1662,7 +1762,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1676,7 +1777,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1690,7 +1792,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1704,7 +1807,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1718,7 +1822,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1732,7 +1837,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1746,7 +1852,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1794,7 +1901,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -1808,7 +1916,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -1822,7 +1931,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -1841,7 +1951,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1855,7 +1966,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     })
 
@@ -1870,7 +1982,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -1884,7 +1997,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -1898,7 +2012,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -1912,7 +2027,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -1931,7 +2047,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -1969,7 +2086,7 @@ const runBot = async () => {
         })
             .catch((error) => {
                 //console.error('Error sending message:', error);
-                logger.errorLogger(`Error sending message ${error}`, 'bot.hears')
+                logger.errorLogger(`Error sending message ${error}`, 'bot.hears', "Telegram-bot")
                 ctx.reply('Произошла ошибка при отправке сообщения');
             });;
     });
@@ -1984,7 +2101,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -1998,7 +2116,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2012,7 +2131,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2026,7 +2146,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2040,7 +2161,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2054,7 +2176,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2068,7 +2191,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2082,7 +2206,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2096,7 +2221,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2110,7 +2236,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2124,7 +2251,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2138,7 +2266,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2152,7 +2281,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2166,7 +2296,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2180,7 +2311,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2194,7 +2326,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2208,7 +2341,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2222,7 +2356,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2241,7 +2376,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2255,7 +2391,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2269,7 +2406,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2290,7 +2428,8 @@ const runBot = async () => {
             `${ctx.message.from.username ? ctx.message.from.username : ctx.message.from.first_name}`,
             `${totalLotid}`,
             `${totalSite}`,
-            `${messageInfo}`
+            `${messageInfo}`,
+            "Telegram-bot",
         )
     });
 
@@ -2339,7 +2478,7 @@ const runBot = async () => {
         })
             .catch((error) => {
                 //console.error('Error sending message:', error);
-                logger.errorLogger(`${error}`, 'Bot.hears');
+                logger.errorLogger(`${error}`, 'Bot.hears', "Telegram-bot");
                 ctx.reply('Произошла ошибка при отправке сообщения');
             });;
     });

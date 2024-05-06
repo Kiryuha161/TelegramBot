@@ -14,9 +14,9 @@ configure({
 
 var logger = getLogger();
 
-module.exports.errorLogger = function (error, functionName) {
+module.exports.errorLogger = function (error, functionName, project) {
     let logInfo = {
-        project: "TelegramSupportBot",
+        project: project,
         timestamp: new Date(),
         functionName: functionName,
         level: 'error',
@@ -25,9 +25,9 @@ module.exports.errorLogger = function (error, functionName) {
     };
     logger.error(JSON.stringify(logInfo));
 };
-module.exports.infoLogger = function (infoMessage, functionName, userName, lotId, site, question) {
+module.exports.infoLogger = function (infoMessage, functionName, userName, lotId, site, question, project) {
     let logInfo = {
-        project: "TelegramSupportBot",
+        project: project,
         timestamp: new Date(),
         functionName: functionName,
         level: 'info',
@@ -40,9 +40,9 @@ module.exports.infoLogger = function (infoMessage, functionName, userName, lotId
     logger.info(JSON.stringify(logInfo));
 
 };
-module.exports.warnLogger = function (warnMessage, functionName) {
+module.exports.warnLogger = function (warnMessage, functionName, project) {
     let logInfo = {
-        project: "TelegramSupportBot",
+        project: project,
         timestamp: new Date(),
         functionName: functionName,
         level: 'warn',
@@ -50,9 +50,9 @@ module.exports.warnLogger = function (warnMessage, functionName) {
     };
     logger.warn(JSON.stringify(logInfo));
 };
-module.exports.startLogger = function(startMessage, port) {
+module.exports.startLogger = function(startMessage, port, project) {
     let startInfo = {
-        project: "TelegramSupportBot",
+        project: project,
         timestamp: new Date(),
         level: 'info',
         message: startMessage
@@ -60,3 +60,18 @@ module.exports.startLogger = function(startMessage, port) {
 
     logger.info(JSON.stringify(startInfo));
 }
+
+module.exports.chatLogger = function(startMessage, userMessage, project, site, answer) {
+    let chatInfo = {
+        project: project,
+        timestamp: new Date(),
+        level: 'info',
+        message: startMessage,
+        site: site,
+        userMessage: userMessage,
+        answer: answer
+    }
+
+    logger.info(JSON.stringify(chatInfo));
+}
+
