@@ -4,6 +4,7 @@ let handleData = require('./variables.js').handleData;
 const path = require('path');
 const logger = require('./logger.js');
 const bodyParser = require('body-parser');
+const { getFullData } = require('./variables.js');
 
 const app = express();
 
@@ -18,6 +19,17 @@ app.use((req, res, next) => {
     next();
   });
 
+
+app.get('/getSiteObject', async (req, res) => {
+    const site = req.body;
+    let siteObjects;
+    await handleData();
+
+    getFullData();
+    siteObjects = state.fullData;
+    console.log(siteObjects);
+    res.json(siteObjects);
+});
 
 app.post('/', async (req, res) => {
     const chatData = req.body;
