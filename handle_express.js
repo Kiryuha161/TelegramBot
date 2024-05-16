@@ -21,7 +21,6 @@ app.use((req, res, next) => {
 
 
 app.get('/getSiteObject', async (req, res) => {
-    const site = req.body;
     let siteObjects;
     await handleData();
 
