@@ -7,6 +7,6 @@ RUN npm install express
 
 COPY . .
 
-EXPOSE 3000
+EXPOSE 3050
 
 CMD ["node", "handle.js"]
