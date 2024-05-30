@@ -4,7 +4,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: nodejs
     restart: unless-stopped
     container_name: telegram-bot
     ports:
@@ -16,7 +15,6 @@ services:
       context: .
       dockerfile: Dockerfile
     command: ["python", "handle_express.js"]
-    image: nodejs
     restart: unless-stopped
     container_name: telegram-chat
     ports:
