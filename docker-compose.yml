@@ -8,8 +8,8 @@ services:
     container_name: telegram-bot
     ports:
       - "3050:3000"
-    # networks:
-    #   nginx_nginx-proxy-manager:
+    networks:
+      nginx_nginx-proxy-manager:
   telegram-chat:
     build:
       context: .
@@ -18,8 +18,8 @@ services:
     container_name: telegram-chat
     ports:
       - "3000:3000"
-#     networks:
-#       nginx_nginx-proxy-manager:
-# networks:
-#   nginx_nginx-proxy-manager:
-#     external: true
+    networks:
+      nginx_nginx-proxy-manager:
+networks:
+  nginx_nginx-proxy-manager:
+    external: true
