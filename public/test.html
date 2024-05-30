@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест формы для чата</title>
+</head>
+<body>
+    <form id="chatForm" action="javascript:void(0);">
+        <input type="text" id="questionInput" name="question" placeholder="Вопрос">
+        <button type="submit" onclick="submitQuestion()">Отправить</button>
+    </form>
+
+    <div id="answerDiv"></div>
+
+    <script>
+        function submitQuestion() {
+            const question = document.getElementById('questionInput').value;
+            fetch('http://localhost:3000', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ question: question })
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('answerDiv').innerText = data;
+            });
+        }
+    </script>
+</body>
+</html> 

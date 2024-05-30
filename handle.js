@@ -1306,12 +1306,12 @@ const runBot = async () => {
     bot.hears(state.dataBankrot[2].subcategories[5].name, (ctx) => {
         const answer = state.dataBankrot[2].subcategories[5].questions[0].answer;
 
-        let text = '';
+        /* let text = '';
         for (const element of answer.richText) {
             text += element.text;
-        }
+        } */
 
-        ctx.replyWithMarkdown(text, feedbackButton);
+        ctx.replyWithMarkdown(answer, feedbackButton);
         messageInfo = ctx.message.text;
         logger.infoLogger(
             `Пользователь завершает скрипт`,

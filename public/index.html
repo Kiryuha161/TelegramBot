@@ -1,33 +1,228 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тест формы для чата</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Помощник Viomitra</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/normalize.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+    rel="stylesheet">
 </head>
+
 <body>
-    <form id="chatForm" action="javascript:void(0);">
-        <input type="text" id="questionInput" name="question" placeholder="Вопрос">
-        <button type="submit" onclick="submitQuestion()">Отправить</button>
-    </form>
+  <div class='chat'>
+    <h5 class="chat__title">Помощник Viomitra</h5>
+    <div class="chat__inner">
+      <div class='chat-messages' id='chat-messages'>
+        <div id="message-container">
+          <span class="chat-messages__greetings">Здравствуйте! Выберите сайт, с которым Вам нужна помощь.</span>
+        </div>
+        <div id="answerDiv"></div>
+        <div class='chat-messages__content' id='messages'>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function submitQuestion() {
+      const question = document.getElementById('questionInput').textContent;
+      fetch('http://localhost:3000', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ question: question })
+      })
+        .then(response => response.text())
+        .then(data => {
+          //document.getElementById('answerDiv').innerHTML = "" + data + "";
+          displayQuestionAndAnswer(question, data);
+        });
+    }
 
-    <div id="answerDiv"></div>
-
-    <script>
-        function submitQuestion() {
-            const question = document.getElementById('questionInput').value;
-            fetch('http://localhost:3000', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ question: question })
-            })
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('answerDiv').innerText = data;
-            });
+    const getSites = () => {
+      return fetch('http://localhost:3000/getSites/', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
         }
-    </script>
+      })
+        .then(response => response.json())
+        .then(data => {
+          return data;
+        });
+    }
+
+    const getSiteMessages = () => {
+      return fetch('http://localhost:3000/getSiteMessages/', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          return data;
+        });
+    }
+
+    const getCategories = () => {
+      return fetch('http://localhost:3000/getCategoriesData/', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+          return data;
+        });
+    }
+
+    const actToAction = (chatData) => {
+      return fetch('http://localhost:3000/actOnQuestion/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ chatData: chatData })
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log(data);
+          return data;
+        })
+        .catch(error => console.error('Fetch error:', error));
+    }
+
+    const displayQuestions = (question, isShowQuestions) => {
+      if (!isShowQuestions[question]) {
+        isShowQuestions[question] = true;
+        const questionButton = document.createElement('button');
+        questionButton.textContent = question;
+        questionButton.classList.add('category-btn', 'chat-messages__btn');
+
+        return questionButton;
+      }
+
+      return document.createElement('div');
+    }
+
+    const addButton = (text) => {
+      const button = document.createElement('button');
+      button.textContent = text;
+      button.classList.add('category-btn', 'chat-messages__btn');
+      return button;
+    }
+
+    const showAnswer = async (text, buttonBlock) => {
+      const answer = await actToAction(text);
+      displayQuestionAndAnswer(text, String(answer));
+    }
+
+    const refreshButtonBlock = (buttonBlock, element) => {
+      buttonBlock.innerHTML = '';
+      buttonBlock.appendChild(element);
+    }
+
+    const runChatBot = async () => {
+      let sites = await getSites();
+      let siteMessages = await getSiteMessages();
+      let categories = await getCategories();
+
+      let isShowQuestions = {};
+      const buttonBlock = document.querySelector('.chat-messages__content');
+      const buttons = [];
+      const backButton = addButton("Вернуться назад");
+
+      backButton.addEventListener('click', async () => {
+        buttonBlock.innerHTML = '';
+        runChatBot();
+      });
+
+      for (let i = 0; i < sites.length; i++) {
+        buttons[i] = addButton(sites[i]);
+        buttonBlock.appendChild(buttons[i]);
+
+        buttons[i].addEventListener('click', () => {
+          displayQuestionAndAnswer(buttons[i].textContent, siteMessages[i]);
+          buttonBlock.innerHTML = '';
+          categories[i].forEach(category => {
+            const categoryButton = addButton(category.category);
+            buttonBlock.appendChild(categoryButton);
+
+            categoryButton.addEventListener('click', async () => {
+              showAnswer(categoryButton.textContent);
+              buttonBlock.innerHTML = '';
+              if (category.questions) {
+                category.questions.forEach(qa => {
+                  const questionArtButton = addButton(qa.question);
+                  buttonBlock.appendChild(questionArtButton);
+
+                  questionArtButton.addEventListener('click', async () => {
+                    showAnswer(questionArtButton.textContent);
+                    refreshButtonBlock(buttonBlock, questionArtButton);
+                  });
+                })
+              }
+              if (category.subcategories) {
+                category.subcategories.forEach(sub => {
+                  const subcategoriesButton = addButton(sub.name);
+                  if (sub.name) {
+                    buttonBlock.appendChild(subcategoriesButton);
+                  } else {
+                    buttonBlock.appendChild(backButton);
+                  }
+
+                  subcategoriesButton.addEventListener('click', async () => {
+                    showAnswer(subcategoriesButton.textContent);
+                    buttonBlock.innerHTML = '';
+                    if (sub.questions[i].question) {
+                      sub.questions.forEach(q => {
+                        const questionButton = displayQuestions(q.question, isShowQuestions);
+                        buttonBlock.appendChild(questionButton);
+
+                        questionButton.addEventListener('click', async () => {
+                          buttonBlock.innerHTML = '';
+                          showAnswer(questionButton.textContent);
+                          refreshButtonBlock(buttonBlock, backButton);
+                        });
+                      });
+                    } else {
+                      buttonBlock.appendChild(backButton);
+                    }
+                  });
+                })
+              }
+              else {
+                buttonBlock.appendChild(backButton);
+              }
+            });
+          });
+        });
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      runChatBot();
+    });
+
+    /* if (categories[i].subcategories.name) {
+               console.log("categories[i].subcategories");
+                }  */
+  </script>
+  <script src="./js/main.js"></script>
 </body>
+
 </html>
