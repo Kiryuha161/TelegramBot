@@ -4,6 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    command: ["python", "handle.js"]
     restart: unless-stopped
     container_name: telegram-bot
     ports:
