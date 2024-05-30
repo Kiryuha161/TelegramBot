@@ -4,9 +4,18 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: nodejs
     restart: unless-stopped
     container_name: telegram-bot
+    ports:
+      - "3050:3000"
+    networks:
+      nginx_nginx-proxy-manager:
+  telegram-chat:
+    build:
+      context: .
+      dockerfile: chatDockerfile
+    restart: unless-stopped
+    container_name: telegram-chat
     ports:
       - "3000:3000"
     networks:
