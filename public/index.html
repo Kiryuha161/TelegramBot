@@ -29,9 +29,11 @@
     </div>
   </div>
   <script>
+    const LOCALE_URL = 'http://localhost:3000';
+    const PROD_URL = 'https://bot.viomitra.ru';
     function submitQuestion() {
       const question = document.getElementById('questionInput').textContent;
-      fetch('http://localhost:3000', {
+      fetch(PROD_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -46,7 +48,7 @@
     }
 
     const getSites = () => {
-      return fetch('http://localhost:3000/getSites/', {
+      return fetch(`${PROD_URL}/getSites/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -59,7 +61,7 @@
     }
 
     const getSiteMessages = () => {
-      return fetch('http://localhost:3000/getSiteMessages/', {
+      return fetch(`${PROD_URL}/getSiteMessages`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -72,7 +74,7 @@
     }
 
     const getCategories = () => {
-      return fetch('http://localhost:3000/getCategoriesData/', {
+      return fetch(`${PROD_URL}/getCategoriesData/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
@@ -86,7 +88,7 @@
     }
 
     const actToAction = (chatData) => {
-      return fetch('http://localhost:3000/actOnQuestion/', {
+      return fetch(`${PROD_URL}/actOnQuestion/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -218,9 +220,6 @@
       runChatBot();
     });
 
-    /* if (categories[i].subcategories.name) {
-               console.log("categories[i].subcategories");
-                }  */
   </script>
   <script src="./js/main.js"></script>
 </body>
