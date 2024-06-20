@@ -1,9 +1,10 @@
 version: '3'
 services:
   telegram-bot:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: api.registry.viomitra.ru/telegram_api:latest
     restart: unless-stopped
     container_name: telegram-bot
     ports:
@@ -11,9 +12,10 @@ services:
     networks:
       nginx_nginx-proxy-manager:
   telegram-chat:
-    build:
-      context: .
-      dockerfile: chatDockerfile
+    # build:
+    #   context: .
+    #   dockerfile: chatDockerfile
+    image: api.registry.viomitra.ru/telegram_chat:latest
     restart: unless-stopped
     container_name: telegram-chat
     ports:
