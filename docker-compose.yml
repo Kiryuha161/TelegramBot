@@ -13,6 +13,8 @@ services:
         condition: any
         delay: 5s
         max_attempts: 3
+      labels:
+        - traefik.enable=false
   telegram_chat:
     image: api.registry.viomitra.ru/telegram_chat:latest
     restart: unless-stopped
