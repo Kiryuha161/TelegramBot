@@ -2,8 +2,6 @@ version: '3'
 services:
   telegram_api:
     image: api.registry.viomitra.ru/telegram_api:latest
-    networks:
-      - traefik-public
     ports:
       - 3000:3050
     deploy:
@@ -32,7 +30,7 @@ services:
         - traefik.http.routers.telegram_chat-https.entrypoints=https
         - traefik.http.routers.telegram_chat-https.tls=true
         - traefik.http.routers.telegram_chat-https.tls.certresolver=le
-        - traefik.http.services.telegram_chat.loadbalancer.server.port=80
+        - traefik.http.services.telegram_chat.loadbalancer.server.port=3000
 networks:
   traefik-public:
     external: true
