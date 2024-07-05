@@ -8,7 +8,11 @@ services:
       mode: replicated
       replicas: 1
       placement:
-        constraints: [node.role == worker]
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
   telegram_chat:
     image: api.registry.viomitra.ru/telegram_chat:latest
     restart: unless-stopped
@@ -18,7 +22,11 @@ services:
       mode: replicated
       replicas: 1
       placement:
-        constraints: [node.role == worker]
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
       labels:
         - traefik.enable=true
         - traefik.docker.network=traefik-public
