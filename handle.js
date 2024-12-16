@@ -1169,7 +1169,7 @@ const runBot = async () => {
 
     //Задаток на лс
     bot.hears(state.dataBankrot[0].subcategories[0].questions[0].question, (ctx) => {
-        ctx.replyWithMarkdown(state.dataBankrot[0].subcategories[0].questions[0].answer.text, feedbackButton);
+        ctx.replyWithMarkdown(state.dataBankrot[0].subcategories[0].questions[0].answer, feedbackButton);
         messageInfo = ctx.message.text;
         logger.infoLogger(
             `Пользователь завершает скрипт`,
